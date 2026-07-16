@@ -2,14 +2,17 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_key_change_me_in_production';
 
 exports.verifyToken = (req, res, next) => {
+  let token = null;
   const authHeader = req.headers['authorization'];
-  if (!authHeader) {
-    return res.status(403).json({ error: 'No authorization header provided' });
+  
+  if (authHeader) {
+    token = authHeader.split(' ')[1]; // Expecting "Bearer TOKEN"
+  } else if (req.query && req.query.token) {
+    token = req.query.token;
   }
 
-  const token = authHeader.split(' ')[1]; // Expecting "Bearer TOKEN"
   if (!token) {
-    return res.status(403).json({ error: 'Access token is missing' });
+    return res.status(403).json({ error: 'No authorization header or token parameter provided' });
   }
 
   try {

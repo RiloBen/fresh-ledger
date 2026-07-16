@@ -54,3 +54,25 @@
 - `[ ]` **Milestone 8: Verification & Deployment**
   - `[ ]` Test all API endpoints locally.
   - `[ ]` Deploy project to Vercel and verify connection with TiDB Cloud.
+
+- `[ ]` **Milestone 9: React/Tailwind Frontend Development (Michael's Workspace)**
+  - `[ ]` **Setup Client Workspace:**
+    - Initialize React/Vite app inside a separate subfolder (e.g., `client/`) or separate repository.
+    - Set up Tailwind CSS configuration and baseline styles.
+  - `[ ]` **Implement Client Pages & Views:**
+    - **Authentication Page:** Build login UI mapping to `POST /api/auth/login`. Store JWT in state / localStorage.
+    - **Staff Inventory Tracker:**
+      - Build quick-input form matching fields: Name, Category, Qty, Unit, Expiry, and Receipt File.
+      - Display current inventory lists, grouping batches approaching expiration (critical alert within 2 days).
+      - Wire buttons to call `PUT /api/stock/:id/status` (used/wasted) and `POST /api/promo/rescue` (trigger AI rescue).
+    - **Manager Dashboard Analytics:**
+      - Fetch `GET /api/analytics/waste-index` to display metrics: Spent, Wasted, and Waste Index Percentage.
+      - Render interactive visual charts (e.g., using Chart.js, Recharts, or FlowChart) mapping spent vs wasted budgets.
+      - Implement "Export Excel" download binding to `GET /api/analytics/export-excel?token=...`.
+    - **AI Food Rescue Console:**
+      - Render promo recommendation cards fetched from `GET /api/promo/drafts`.
+      - Wire a button to approve drafts calling `PUT /api/promo/drafts/:id/approve` with `{"status": "active"}` body.
+    - **Procurement Forecast Visualizer:**
+      - Render a selector for ingredients.
+      - Fetch predictions from `GET /api/analytics/procurement-forecast/:id` and display projected demand.
+

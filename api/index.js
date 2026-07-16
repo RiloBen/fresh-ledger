@@ -12,6 +12,9 @@ app.use(express.urlencoded({ extended: true }));
 // Serve uploads statically
 app.use('/public/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
+// Serve static client assets (playground UI)
+app.use(express.static(path.join(__dirname, '../public')));
+
 // Routes
 const authRoutes = require('../src/routes/auth');
 const stockRoutes = require('../src/routes/stock');
