@@ -110,3 +110,13 @@
     - `[x]` Design and embed a hidden HTML modal dialog for Change Password in `public/index.html`.
     - `[x]` Style the modal dialog in `public/style.css` (overlay, input fields, visual consistency).
     - `[x]` Add script event handlers in `public/app.js` to open the modal, validate input fields, fetch the API, and close the modal.
+
+- `[x]` **Milestone 13: Staff View Revisions (Deduct Waste & Expired Dashboard)**
+  - `[x]` **Backend Updates:**
+    - `[x]` Refactor `updateStockStatus` controller in `src/controllers/stockController.js` to handle `wasted` partial deduction (subtract quantity and insert a separate `'wasted'` row in `stock_batches`).
+    - `[x]` Implement `getExpiredStock` in `src/controllers/stockController.js` and register GET `/api/stock/expired` route.
+  - `[x]` **Frontend UI Revisions:**
+    - `[x]` Add expired dashboard controls (`#expired-filter-month`) and table (`#expired-stock-list-body`) in the Staff workspace in `public/index.html`.
+    - `[x]` Refactor "Waste" button in the batches table to read and send the quantity to update status in `public/app.js`.
+    - `[x]` Bind listener to `#expired-filter-month` to fetch and load expired ingredients for the selected month in `public/app.js`.
+

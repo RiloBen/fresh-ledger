@@ -47,6 +47,8 @@ const expInput = document.getElementById('expiry_date');
 const fileInput = document.getElementById('receipt-file');
 const bigScaleInventoryGrid = document.getElementById('big-scale-inventory-grid');
 const stockListBody = document.getElementById('stock-list-body');
+const expiredFilterMonth = document.getElementById('expired-filter-month');
+const expiredStockListBody = document.getElementById('expired-stock-list-body');
 
 // Manager Elements
 const filterMonthInput = document.getElementById('filter-month');
@@ -95,6 +97,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const currentMonth = today.toISOString().substring(0, 7); // e.g. "2026-07"
   if (filterMonthInput) {
     filterMonthInput.value = currentMonth;
+  }
+
+  if (expiredFilterMonth) {
+    expiredFilterMonth.value = currentMonth;
+    expiredFilterMonth.addEventListener('change', () => {
+      loadExpiredStock(expiredFilterMonth.value);
+    });
   }
 
   // Setup login role switching tabs
@@ -226,6 +235,9 @@ function showWorkspace() {
     staffWorkspace.classList.remove('hidden');
     managerWorkspace.classList.add('hidden');
     loadInventory();
+    if (expiredFilterMonth) {
+      loadExpiredStock(expiredFilterMonth.value);
+    }
   } else if (user.role === 'manager') {
     staffWorkspace.classList.add('hidden');
     managerWorkspace.classList.remove('hidden');
@@ -365,9 +377,9 @@ function renderExpiryBatches(stocks) {
         <div class="flex-row" style="margin-bottom: 6px;">
           <input type="number" id="deduct-${item.id}" class="use-qty-input" min="0.01" max="${parseFloat(item.remaining_quantity)}" value="${parseFloat(item.remaining_quantity)}" step="0.01">
           <button class="btn success btn-action-sm" onclick="updateStatus(${item.id}, 'used')">Used</button>
+          <button class="btn danger btn-action-sm" onclick="updateStatus(${item.id}, 'wasted')">Waste</button>
         </div>
-        <button class="btn danger btn-action-sm" onclick="updateStatus(${item.id}, 'wasted')">Waste</button>
-        ${diffDays <= 2 ? `<button class="btn primary btn-action-sm" onclick="triggerRescue(${item.id})">AI Rescue</button>` : ''}
+        ${diffDays <= 2 ? `<button class="btn primary btn-action-sm" style="width: 100%; display: block;" onclick="triggerRescue(${item.id})">AI Rescue</button>` : ''}
       </td>
     `;
     stockListBody.appendChild(tr);
@@ -378,12 +390,12 @@ function renderExpiryBatches(stocks) {
 window.updateStatus = async (id, status) => {
   let quantityToDeduct = undefined;
   
-  if (status === 'used') {
+  if (status === 'used' || status === 'wasted') {
     const inputEl = document.getElementById(`deduct-${id}`);
     if (inputEl) {
       quantityToDeduct = parseFloat(inputEl.value);
       if (isNaN(quantityToDeduct) || quantityToDeduct <= 0) {
-        alert('Masukkan jumlah pemakaian yang valid!');
+        alert('Masukkan jumlah kuantitas yang valid!');
         return;
       }
     }
@@ -391,7 +403,7 @@ window.updateStatus = async (id, status) => {
 
   const confirmMsg = status === 'used'
     ? `Tandai pemakaian sebanyak ${quantityToDeduct} unit untuk batch ini?`
-    : `Tandai seluruh sisa bahan pada batch ini sebagai terbuang (waste)?`;
+    : `Tandai pembuangan (waste) sebanyak ${quantityToDeduct} unit untuk batch ini?`;
 
   if (!confirm(confirmMsg)) return;
 
@@ -406,12 +418,15 @@ window.updateStatus = async (id, status) => {
     });
     if (res.ok) {
       loadInventory();
+      if (expiredFilterMonth) {
+        loadExpiredStock(expiredFilterMonth.value);
+      }
     } else {
       const errData = await res.json();
       alert(`Gagal update status: ${errData.error || 'Unknown error'}${errData.details ? ` (${errData.details})` : ''}`);
     }
   } catch (err) {
-    alert(err.message);
+    alert(`Error: ${err.message}`);
   }
 };
 
@@ -693,3 +708,43 @@ forecastBtn.addEventListener('click', async () => {
     alert(err.message);
   }
 });
+
+// STAFF: Load expired ingredients report for selected month
+async function loadExpiredStock(month) {
+  if (!expiredStockListBody) return;
+  if (!month) {
+    expiredStockListBody.innerHTML = '<tr><td colspan="4" class="no-data">Pilih bulan...</td></tr>';
+    return;
+  }
+
+  try {
+    const res = await fetch(`${API_URL}/api/stock/expired?month=${month}`, {
+      headers: getHeaders()
+    });
+    const data = await res.json();
+    
+    if (res.ok) {
+      expiredStockListBody.innerHTML = '';
+      if (data.length === 0) {
+        expiredStockListBody.innerHTML = '<tr><td colspan="4" class="no-data">Tidak ada bahan kedaluwarsa pada bulan ini</td></tr>';
+        return;
+      }
+
+      data.forEach(item => {
+        const qtyWasted = parseFloat(item.status === 'wasted' ? item.quantity : item.remaining_quantity);
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><strong>${item.ingredient_name}</strong></td>
+          <td><code>#${item.id}</code></td>
+          <td><span style="color: var(--danger-color); font-weight: bold">${item.expiry_date.split('T')[0]}</span></td>
+          <td><strong style="color: var(--danger-color);">${qtyWasted} ${item.unit}</strong></td>
+        `;
+        expiredStockListBody.appendChild(tr);
+      });
+    } else {
+      expiredStockListBody.innerHTML = `<tr><td colspan="4" class="no-data" style="color: var(--danger-color)">Gagal memuat: ${data.error || 'Unknown error'}</td></tr>`;
+    }
+  } catch (err) {
+    expiredStockListBody.innerHTML = `<tr><td colspan="4" class="no-data" style="color: var(--danger-color)">Error: ${err.message}</td></tr>`;
+  }
+}

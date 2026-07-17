@@ -76,12 +76,19 @@ exports.updateStockStatus = async (req, res) => {
 
   try {
     // Check current stock batch details
-    const [batches] = await db.query('SELECT remaining_quantity, quantity FROM stock_batches WHERE id = ?', [parseInt(id, 10)]);
+    const [batches] = await db.query(
+      'SELECT remaining_quantity, quantity, ingredient_id, unit_price, receipt_image_path, expiry_date, created_at FROM stock_batches WHERE id = ?', 
+      [parseInt(id, 10)]
+    );
     if (batches.length === 0) {
       return res.status(404).json({ error: 'Stock batch not found' });
     }
 
-    const currentRemaining = parseFloat(batches[0].remaining_quantity);
+    const batch = batches[0];
+    const currentRemaining = parseFloat(batch.remaining_quantity);
+    const originalQty = parseFloat(batch.quantity);
+    const unitPrice = parseFloat(batch.unit_price);
+
     let newRemaining = currentRemaining;
     let targetStatus = status;
 
@@ -97,20 +104,76 @@ exports.updateStockStatus = async (req, res) => {
       } else {
         targetStatus = 'active'; // remains active since there's leftover quantity
       }
-    } else if (status === 'wasted') {
-      newRemaining = 0.00;
-      targetStatus = 'wasted';
-    } else if (status === 'active') {
-      newRemaining = parseFloat(batches[0].quantity);
-      targetStatus = 'active';
-    }
+      
+      // Update original batch
+      await db.query(
+        `UPDATE stock_batches 
+         SET status = ?, remaining_quantity = ?
+         WHERE id = ?`,
+        [targetStatus, newRemaining, parseInt(id, 10)]
+      );
+    } 
+    else if (status === 'wasted') {
+      const deduct = quantity_to_deduct !== undefined ? parseFloat(quantity_to_deduct) : currentRemaining;
+      if (isNaN(deduct) || deduct <= 0) {
+        return res.status(400).json({ error: 'quantity_to_deduct must be a positive number' });
+      }
 
-    await db.query(
-      `UPDATE stock_batches 
-       SET status = ?, remaining_quantity = ?
-       WHERE id = ?`,
-      [targetStatus, newRemaining, parseInt(id, 10)]
-    );
+      if (deduct < currentRemaining) {
+        newRemaining = currentRemaining - deduct;
+        const newOriginalQty = originalQty - deduct;
+        const newTotalPrice = newOriginalQty * unitPrice;
+        
+        // 1. Update original batch: reduce quantity and remaining
+        await db.query(
+          `UPDATE stock_batches 
+           SET quantity = ?, remaining_quantity = ?, total_price = ?, status = 'active'
+           WHERE id = ?`,
+          [newOriginalQty, newRemaining, newTotalPrice, parseInt(id, 10)]
+        );
+
+        // 2. Insert new wasted batch row representing the wasted portion
+        const wastedTotalPrice = deduct * unitPrice;
+        await db.query(
+          `INSERT INTO stock_batches 
+           (ingredient_id, quantity, remaining_quantity, unit_price, total_price, receipt_image_path, status, expiry_date, created_at) 
+           VALUES (?, ?, 0.00, ?, ?, ?, 'wasted', ?, ?)`,
+          [
+            batch.ingredient_id,
+            deduct,
+            unitPrice,
+            wastedTotalPrice,
+            batch.receipt_image_path,
+            batch.expiry_date,
+            batch.created_at
+          ]
+        );
+        
+        targetStatus = 'active'; // Original batch remains active
+      } else {
+        // Entire batch is wasted
+        newRemaining = 0.00;
+        targetStatus = 'wasted';
+        
+        await db.query(
+          `UPDATE stock_batches 
+           SET status = ?, remaining_quantity = ?
+           WHERE id = ?`,
+          [targetStatus, newRemaining, parseInt(id, 10)]
+        );
+      }
+    } 
+    else if (status === 'active') {
+      newRemaining = parseFloat(batch.quantity);
+      targetStatus = 'active';
+      
+      await db.query(
+        `UPDATE stock_batches 
+         SET status = ?, remaining_quantity = ?
+         WHERE id = ?`,
+         [targetStatus, newRemaining, parseInt(id, 10)]
+      );
+    }
 
     res.status(200).json({ 
       message: `Stock batch updated successfully`, 
@@ -119,6 +182,33 @@ exports.updateStockStatus = async (req, res) => {
     });
   } catch (error) {
     console.error('[StockCtrl] Error updating stock status:', error);
+    res.status(500).json({ error: 'Internal Server Error', details: error.message });
+  }
+};
+
+// GET /api/stock/expired - List all expired/wasted batches for a specific month
+exports.getExpiredStock = async (req, res) => {
+  const { month } = req.query;
+
+  if (!month) {
+    return res.status(400).json({ error: 'month parameter (YYYY-MM) is required' });
+  }
+
+  try {
+    // Find stock batches where expiry_date is in the month, and either status = 'wasted' or (status = 'active' and expired)
+    const [rows] = await db.query(
+      `SELECT sb.*, i.name as ingredient_name, i.category, i.unit 
+       FROM stock_batches sb
+       JOIN ingredients i ON sb.ingredient_id = i.id
+       WHERE DATE_FORMAT(sb.expiry_date, '%Y-%m') = ? 
+         AND (sb.status = 'wasted' OR (sb.status = 'active' AND sb.expiry_date < CURRENT_DATE()))
+       ORDER BY sb.expiry_date ASC`,
+      [month]
+    );
+
+    res.status(200).json(rows);
+  } catch (error) {
+    console.error('[StockCtrl] Error getting expired stock batches:', error);
     res.status(500).json({ error: 'Internal Server Error', details: error.message });
   }
 };

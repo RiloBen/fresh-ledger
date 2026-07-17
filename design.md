@@ -110,8 +110,11 @@ CREATE TABLE sales_history (
 * **PUT `/api/stock/:id/status`**
   - Request: `{"status": "used" | "wasted", "quantity_to_deduct": number}`
     - If status is `used`: Deducts `quantity_to_deduct` from `remaining_quantity`. If `remaining_quantity` reaches 0, the status transitions to `used`.
-    - If status is `wasted`: The entire remaining quantity of the batch is marked wasted, and status changes to `wasted`.
-  - Response: `200 OK` -> `{"message": "Stock batch updated successfully", "remaining_quantity": 0.00}`
+    - If status is `wasted`: Deducts `quantity_to_deduct` from `remaining_quantity`. The deducted amount is logged as a separate wasted record in database, and the active batch is updated with the leftover. If the entire sisa is wasted, status transitions to `wasted`.
+  - Response: `200 OK` -> `{"message": "Stock batch updated successfully", "status": "active" | "wasted", "remaining_quantity": number}`
+* **GET `/api/stock/expired`**
+  - Query Parameter: `month` (optional, format: `YYYY-MM`. Filters records to only return batches that expired within the selected month).
+  - Response: `200 OK` -> `[{"id": 1, "ingredient_name": "Ayam", "quantity": 10.0, "remaining_quantity": 5.0, "expiry_date": "2026-07-10", "status": "wasted"}]`
 
 ### **Analytics & Reports**
 * **GET `/api/analytics/waste-index`**

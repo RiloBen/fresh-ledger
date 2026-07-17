@@ -160,6 +160,37 @@
               </div>
             </section>
 
+            <!-- Expired Ingredients Dashboard card -->
+            <section class="card">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 12px; border-bottom: 1px solid #e5e7eb; padding-bottom: 12px;">
+                <div>
+                  <h2 style="margin: 0; font-size: 1.25rem; display: flex; align-items: center; gap: 8px;">⚠️ Laporan Bahan Baku Kedaluwarsa</h2>
+                  <p class="subtitle" style="margin: 4px 0 0 0;">Daftar bahan yang terbuang karena kedaluwarsa pada bulan terpilih.</p>
+                </div>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                  <label for="expired-filter-month" style="font-weight: 600; font-size: 0.9rem;">Pilih Bulan:</label>
+                  <input type="month" id="expired-filter-month" style="padding: 6px; border-radius: 6px; border: 1px solid var(--border-color); outline: none; cursor: pointer;">
+                </div>
+              </div>
+              
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Bahan</th>
+                      <th>Batch ID</th>
+                      <th>Tanggal Kedaluwarsa</th>
+                      <th>Jumlah Terbuang</th>
+                    </tr>
+                  </thead>
+                  <tbody id="expired-stock-list-body">
+                    <!-- Expired batches list -->
+                    <tr><td colspan="4" class="no-data">Memuat data...</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
           </div>
 
         </div>

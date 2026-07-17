@@ -31,6 +31,9 @@ router.post('/', verifyToken, upload.single('receipt'), stockController.createSt
 // GET /api/stock - List active inventory (requires auth)
 router.get('/', verifyToken, stockController.listStock);
 
+// GET /api/stock/expired - List expired inventory (requires auth)
+router.get('/expired', verifyToken, stockController.getExpiredStock);
+
 // PUT /api/stock/:id/status - Update batch status to used/wasted (requires auth)
 router.put('/:id/status', verifyToken, stockController.updateStockStatus);
 

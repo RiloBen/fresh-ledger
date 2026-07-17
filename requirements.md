@@ -35,9 +35,10 @@
   - Total Harga Nota (`decimal`, required)
   - Kategori (`string`, dropdown list, required)
   - Expiry Date (`date`, required)
-- **Separated Inventory Views (Staff side):**
+- **Separated Inventory Views & Dashboards (Staff side):**
   - **Big Scale Overall Management:** Displays the sum total of active stocks grouped by ingredient names (aggregated quantities).
   - **Expiry-Grouped Batches:** Displays individual batches sorted and grouped by expiration dates to track details.
+  - **Expired Ingredients Dashboard:** Displays a list of all stock batches that have expired within a selected month. Features a month selection dropdown/input so the staff can audit expired ingredients by month.
 - UX Optimizations:
   - Kursor must automatically focus (`autofocus`) on the Ingredient Name field upon loading the form.
   - The form is submitted manually by the staff (no AI visual parse).
@@ -47,7 +48,9 @@
   - **Used (with Quantity Input):** When using stock, staff inputs the *amount to use*.
     - If `used_amount < remaining_quantity`, the batch quantity is reduced, and its status remains `active`.
     - If `used_amount >= remaining_quantity`, the batch is fully consumed, and status changes to `used`.
-  - `wasted`: Raw material spoiled and thrown away (entire remaining batch becomes 0 and status is `wasted`).
+  - **Wasted (with Quantity Input):** When wasting stock, staff inputs the *amount to waste*.
+    - If `wasted_amount < remaining_quantity`, the active batch quantity is reduced by `wasted_amount`, and a new historical record with status `wasted` is created in the database for the wasted portion.
+    - If `wasted_amount >= remaining_quantity`, the entire remaining batch status transitions to `wasted`.
   - `critical`: Raw material with remaining shelf life < 2 days.
 
 ### FR-4: Monthly Waste Index Ledger & Excel Export (Manager side)
