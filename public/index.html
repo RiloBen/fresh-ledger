@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fresh Ledger - Playground UI</title>
+  <title>Fresh Ledger | Workspace</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
 
   <!-- Header -->
   <header>
-    <div class="logo">🥬 Fresh Ledger <span class="badge">Playground</span></div>
+    <div class="logo">Fresh Ledger <span class="badge">Playground</span></div>
     <div id="auth-status" class="auth-status">
-      <span>Not Logged In</span>
+      <span>Belum Login</span>
     </div>
   </header>
 
@@ -20,24 +20,27 @@
   <main class="container">
 
     <!-- LOGIN SCREEN -->
-    <section id="login-section" class="card">
-      <h2>🔑 Login Pengguna</h2>
-      <p class="subtitle">Pilih role uji coba atau login dengan data seeder.</p>
+    <section id="login-section" class="card" style="max-width: 500px; margin: 40px auto;">
+      <h2>Masuk ke Workspace</h2>
+      <p class="subtitle">Silakan gunakan kredensial manajer atau staf untuk mengakses sistem.</p>
       
       <form id="login-form">
         <div class="form-group">
           <label for="username">Username</label>
-          <input type="text" id="username" placeholder="Masukkan username (manager / staff)" required>
+          <input type="text" id="username" placeholder="manager / staff" required>
         </div>
         <div class="form-group">
           <label for="password">Password</label>
-          <input type="password" id="password" placeholder="Masukkan password (manager123 / staff123)" required>
+          <input type="password" id="password" placeholder="••••••••" required>
         </div>
         
-        <div class="button-group">
-          <button type="submit" class="btn primary">Login</button>
-          <button type="button" id="quick-manager" class="btn secondary">Quick Login Manager</button>
-          <button type="button" id="quick-staff" class="btn secondary">Quick Login Staff</button>
+        <div class="button-group mt-4">
+          <button type="submit" class="btn primary block">Login</button>
+        </div>
+        
+        <div class="button-group mt-4" style="border-top: 1px solid #e5e7eb; padding-top: 20px;">
+          <button type="button" id="quick-manager" class="btn secondary">Demo Manager</button>
+          <button type="button" id="quick-staff" class="btn secondary">Demo Staff</button>
         </div>
       </form>
     </section>
@@ -46,8 +49,11 @@
     <div id="workspace" class="hidden">
       
       <!-- ROLE SELECTOR / SWITCHER -->
-      <div class="workspace-header">
-        <h3>Menu Operasional: <span id="current-role-badge">Role</span></h3>
+      <div class="flex-row mb-4" style="justify-content: space-between;">
+        <div>
+          <h3 style="color: var(--text-color); font-size: 1.1rem;">Menu Operasional</h3>
+          <p class="tiny-text">Akses aktif saat ini: <span id="current-role-badge" style="font-weight: bold; color: var(--primary-color);">Role</span></p>
+        </div>
         <button id="logout-btn" class="btn danger">Logout</button>
       </div>
 
@@ -57,14 +63,14 @@
           
           <!-- Add Stock Card -->
           <section class="card">
-            <h2>📥 Log Belanja / Input Stok</h2>
-            <p class="subtitle">Catat stok bahan baku masuk disertai foto nota fisik.</p>
+            <h2>Input Stok Bahan Baku</h2>
+            <p class="subtitle">Catat penerimaan stok baru beserta lampiran nota fisik.</p>
             
             <form id="stock-form" enctype="multipart/form-data">
               <div class="form-group">
                 <label for="ingredient-select">Pilih Bahan Baku</label>
                 <select id="ingredient-select" required>
-                  <!-- Dynamically populated -->
+                  <option value="" disabled selected>-- Pilih jenis bahan --</option>
                   <option value="1">Daging Sapi (kg)</option>
                   <option value="2">Ayam (kg)</option>
                   <option value="3">Telur (pcs)</option>
@@ -72,31 +78,35 @@
                   <option value="5">Bawang Merah (kg)</option>
                 </select>
               </div>
-              <div class="form-group">
-                <label for="quantity">Kuantitas</label>
-                <input type="number" step="0.01" id="quantity" placeholder="Contoh: 10" required>
+              
+              <div class="flex-row">
+                <div class="form-group" style="flex: 1;">
+                  <label for="quantity">Kuantitas</label>
+                  <input type="number" step="0.01" id="quantity" placeholder="0" required>
+                </div>
+                <div class="form-group" style="flex: 1;">
+                  <label for="unit_price">Harga Satuan (Rp)</label>
+                  <input type="number" id="unit_price" placeholder="0" required>
+                </div>
               </div>
-              <div class="form-group">
-                <label for="unit_price">Harga Satuan (Rp)</label>
-                <input type="number" id="unit_price" placeholder="Contoh: 110000" required>
-              </div>
+
               <div class="form-group">
                 <label for="expiry_date">Tanggal Kedaluwarsa</label>
                 <input type="date" id="expiry_date" required>
               </div>
               <div class="form-group">
-                <label for="receipt-file">Foto Nota Fisik (Audit Trail)</label>
-                <input type="file" id="receipt-file" accept="image/*">
+                <label for="receipt-file">Lampiran Nota (Opsional)</label>
+                <input type="file" id="receipt-file" accept="image/*" style="padding: 6px;">
               </div>
               
-              <button type="submit" class="btn primary block">Catat Bahan Masuk</button>
+              <button type="submit" class="btn primary block mt-4">Simpan Data Stok</button>
             </form>
           </section>
 
           <!-- Current Inventory -->
           <section class="card">
-            <h2>📦 Stok Aktif Saat Ini</h2>
-            <p class="subtitle">Kelola status penggunaan bahan untuk mencegah waste.</p>
+            <h2>Manajemen Inventaris</h2>
+            <p class="subtitle">Pantau ketersediaan bahan baku aktif di gudang saat ini.</p>
             <div class="table-container">
               <table id="stock-table">
                 <thead>
@@ -123,15 +133,15 @@
         <!-- Waste Index Metric Row -->
         <div class="metrics-row">
           <div class="metric-card">
-            <h4>Spent Budget (Total Belanja)</h4>
+            <h4>Total Pembelanjaan</h4>
             <p id="metric-spent">Rp 0</p>
           </div>
           <div class="metric-card danger-card">
-            <h4>Wasted Budget (Bahan Dibuang)</h4>
+            <h4>Nilai Bahan Terbuang</h4>
             <p id="metric-wasted">Rp 0</p>
           </div>
           <div class="metric-card primary-card">
-            <h4>Waste Index Ledger</h4>
+            <h4>Indeks Efisiensi (Waste)</h4>
             <h2 id="metric-waste-index">0%</h2>
             <div class="progress-bar">
               <div id="index-progress-fill" style="width: 0%"></div>
@@ -143,28 +153,28 @@
           
           <!-- AI Rescue Drafts -->
           <section class="card">
-            <h2>🤖 AI Food Rescue Recommender</h2>
-            <p class="subtitle">Persetujuan diskon menu makanan untuk menyelamatkan bahan baku kritis.</p>
-            <div id="promo-drafts-list" class="promo-container">
+            <h2>Rekomendasi Food Rescue</h2>
+            <p class="subtitle">Usulan penyesuaian harga menu untuk mencegah bahan baku terbuang.</p>
+            <div id="promo-drafts-list" class="promo-container mt-4">
               <!-- Dynamically populated drafts -->
-              <p class="no-data">Tidak ada usulan promo pending.</p>
+              <p class="no-data">Tidak ada rekomendasi aktif saat ini.</p>
             </div>
           </section>
 
           <!-- Procurement Forecaster & Reports -->
           <section class="card">
-            <h2>📈 Data-Driven Procurement & Reports</h2>
+            <h2>Laporan & Proyeksi Kebutuhan</h2>
             
-            <div class="report-box mb-4">
-              <h3>Download Laporan Excel</h3>
-              <p>Unduh seluruh mutasi log inventaris berformat spreadsheet untuk keperluan audit keuangan.</p>
-              <button id="export-excel-btn" class="btn success block">📥 Unduh Lembar Kerja .xlsx</button>
+            <div class="report-box mb-4 mt-4">
+              <h3>Unduh Laporan Inventaris</h3>
+              <p>Ekspor seluruh mutasi data inventaris ke format spreadsheet untuk keperluan audit.</p>
+              <button id="export-excel-btn" class="btn success block mt-4">Export ke Excel (.xlsx)</button>
             </div>
 
             <div class="report-box">
-              <h3>Prediktor Belanja Bulan Depan (ML)</h3>
-              <p>Pilih bahan baku untuk memprediksi kebutuhan pengadaan 30 hari ke depan berbasis data riil.</p>
-              <div class="flex-row">
+              <h3>Proyeksi Pengadaan Terpandu</h3>
+              <p>Prediksi kebutuhan bahan baku 30 hari ke depan berdasarkan riwayat operasional.</p>
+              <div class="flex-row mt-4">
                 <select id="forecast-select">
                   <option value="1">Daging Sapi</option>
                   <option value="2">Ayam</option>
@@ -172,11 +182,11 @@
                   <option value="4">Beras</option>
                   <option value="5">Bawang Merah</option>
                 </select>
-                <button id="forecast-btn" class="btn primary">Proyeksikan Kebutuhan</button>
+                <button id="forecast-btn" class="btn primary">Proyeksikan</button>
               </div>
               <div id="forecast-result" class="forecast-result hidden">
-                <p><strong>Rekomendasi Pembelian:</strong> <span id="forecast-val">0</span></p>
-                <p class="tiny-text">Metode prediksi: <span id="forecast-method">-</span></p>
+                <p><strong>Rekomendasi Restock:</strong> <span id="forecast-val">0</span></p>
+                <p class="tiny-text">Sistem model: <span id="forecast-method">-</span></p>
               </div>
             </div>
           </section>
