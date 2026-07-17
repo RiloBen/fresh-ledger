@@ -569,15 +569,24 @@ th {
   border-color: #22c55e !important;
   box-shadow: 0 4px 12px rgba(34, 197, 94, 0.15) !important;
 }
+.efficiency-card.index-green #index-progress-fill {
+  background-color: #22c55e !important;
+}
 
 .efficiency-card.index-yellow {
   border-color: #eab308 !important;
   box-shadow: 0 4px 12px rgba(234, 179, 8, 0.15) !important;
 }
+.efficiency-card.index-yellow #index-progress-fill {
+  background-color: #eab308 !important;
+}
 
 .efficiency-card.index-red {
   border-color: #ef4444 !important;
   box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15) !important;
+}
+.efficiency-card.index-red #index-progress-fill {
+  background-color: #ef4444 !important;
 }
 
 /* Warning & Critical Alert Banners */
