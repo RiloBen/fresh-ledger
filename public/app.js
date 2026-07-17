@@ -127,7 +127,7 @@ async function performLogin(username, password) {
       localStorage.setItem('user_details', JSON.stringify(user));
       showWorkspace();
     } else {
-      alert(`Login failed: ${data.error || 'Unknown error'}`);
+      alert(`Login failed: ${data.error || 'Unknown error'}${data.details ? ` (${data.details})` : ''}`);
     }
   } catch (err) {
     alert(`Error during login connection: ${err.message}`);
@@ -206,7 +206,7 @@ window.updateStatus = async (id, status) => {
       loadInventory();
     } else {
       const errData = await res.json();
-      alert(`Gagal update status: ${errData.error}`);
+      alert(`Gagal update status: ${errData.error || 'Unknown error'}${errData.details ? ` (${errData.details})` : ''}`);
     }
   } catch (err) {
     alert(err.message);
@@ -226,7 +226,7 @@ window.triggerRescue = async (id) => {
       alert(`Berhasil mengirim usulan promo ke dashboard Manager!\n\nMenu: ${data.draft.reason}`);
       loadInventory();
     } else {
-      alert(`Gagal memicu AI Rescue: ${data.error}`);
+      alert(`Gagal memicu AI Rescue: ${data.error || 'Unknown error'}${data.details ? ` (${data.details})` : ''}`);
     }
   } catch (err) {
     alert(err.message);
@@ -264,7 +264,7 @@ stockForm.addEventListener('submit', async (e) => {
       loadInventory();
     } else {
       const errData = await res.json();
-      alert(`Gagal menambah stok: ${errData.error}`);
+      alert(`Gagal menambah stok: ${errData.error || 'Unknown error'}${errData.details ? ` (${errData.details})` : ''}`);
     }
   } catch (err) {
     alert(err.message);
@@ -344,7 +344,7 @@ window.approvePromo = async (id) => {
       loadMetrics();
     } else {
       const data = await res.json();
-      alert(`Gagal menyetujui promo: ${data.error}`);
+      alert(`Gagal menyetujui promo: ${data.error || 'Unknown error'}${data.details ? ` (${data.details})` : ''}`);
     }
   } catch (err) {
     alert(err.message);
@@ -370,7 +370,7 @@ forecastBtn.addEventListener('click', async () => {
       forecastVal.textContent = `${data.predicted_monthly_demand} kg/pcs`;
       forecastMethod.textContent = data.method;
     } else {
-      alert(`Gagal memuat forecast: ${data.error}`);
+      alert(`Gagal memuat forecast: ${data.error || 'Unknown error'}${data.details ? ` (${data.details})` : ''}`);
     }
   } catch (err) {
     alert(err.message);
