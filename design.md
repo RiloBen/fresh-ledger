@@ -3,7 +3,7 @@
 ## 1. System Architecture
 ```mermaid
 graph TD
-    Client[Frontend Client React/Tailwind] -->|HTTPS| Backend[Node.js Express on Vercel]
+    Client[Frontend Client Vanilla HTML/CSS/JS] -->|HTTPS| Backend[Node.js Express on Vercel]
     Backend -->|SQL Queries| DB[(TiDB Cloud Serverless MySQL)]
     Backend -->|HTTP POST /api/predict| ML[Python Vercel Serverless Function]
     Backend -->|Official Node SDK| Gemini[Google Gemini API]
@@ -112,6 +112,7 @@ CREATE TABLE sales_history (
 * **GET `/api/analytics/waste-index`**
   - Response: `200 OK` -> `{"waste_index": 12.5, "total_spent": 1000000, "total_wasted": 125000}`
 * **GET `/api/analytics/export-excel`**
+  - Query Parameter: `token` (optional, can be passed as `?token=JWT_TOKEN` for direct downloads via `window.open`).
   - Response: Generates and downloads a `.xlsx` file.
 
 ### **Promo Rescue (AI)**
@@ -165,6 +166,12 @@ fresh-ledger/
 ├── api/
 │   ├── index.js             # Entry point for Express API (Vercel Node)
 │   └── predict.py           # Vercel Python Serverless Function (Ruben's ML)
+├── public/                  # Static client files (Playground UI)
+│   ├── index.html           # HTML skeleton for UI
+│   ├── style.css            # Base stylesheet
+│   └── app.js               # Frontend fetch and rendering logic
+├── scripts/
+│   └── test-api.js          # Local endpoint test script
 ├── src/
 │   ├── config/
 │   │   └── database.js      # TiDB Connection setup
@@ -173,17 +180,17 @@ fresh-ledger/
 │   │   ├── stockController.js
 │   │   ├── promoController.js
 │   │   └── analyticsController.js
+│   ├── middlewares/
+│   │   └── authMiddleware.js # JWT & Role-based authentication middleware
 │   ├── routes/
 │   │   ├── auth.js
 │   │   ├── stock.js
 │   │   ├── promo.js
 │   │   └── analytics.js
 │   ├── services/
-│   │   ├── geminiService.js
-│   │   └── seedService.js
-│   └── utils/
-│       └── excelGenerator.js
-├── vercel.json
-├── package.json
-└── requirements.txt         # Python dependencies (scikit-learn, numpy)
+│   │   ├── geminiService.js # Google Gemini AI rescue recommendations
+│   │   └── seedService.js   # DB migrations and seeding data
+├── vercel.json              # Vercel serverless configurations
+├── package.json             # Node dependencies
+└── requirements.txt         # Python dependencies
 ```

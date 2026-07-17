@@ -55,24 +55,26 @@
   - `[ ]` Test all API endpoints locally.
   - `[ ]` Deploy project to Vercel and verify connection with TiDB Cloud.
 
-- `[ ]` **Milestone 9: React/Tailwind Frontend Development (Michael's Workspace)**
-  - `[ ]` **Setup Client Workspace:**
-    - Initialize React/Vite app inside a separate subfolder (e.g., `client/`) or separate repository.
-    - Set up Tailwind CSS configuration and baseline styles.
-  - `[ ]` **Implement Client Pages & Views:**
-    - **Authentication Page:** Build login UI mapping to `POST /api/auth/login`. Store JWT in state / localStorage.
-    - **Staff Inventory Tracker:**
-      - Build quick-input form matching fields: Name, Category, Qty, Unit, Expiry, and Receipt File.
-      - Display current inventory lists, grouping batches approaching expiration (critical alert within 2 days).
-      - Wire buttons to call `PUT /api/stock/:id/status` (used/wasted) and `POST /api/promo/rescue` (trigger AI rescue).
-    - **Manager Dashboard Analytics:**
-      - Fetch `GET /api/analytics/waste-index` to display metrics: Spent, Wasted, and Waste Index Percentage.
-      - Render interactive visual charts (e.g., using Chart.js, Recharts, or FlowChart) mapping spent vs wasted budgets.
-      - Implement "Export Excel" download binding to `GET /api/analytics/export-excel?token=...`.
-    - **AI Food Rescue Console:**
-      - Render promo recommendation cards fetched from `GET /api/promo/drafts`.
-      - Wire a button to approve drafts calling `PUT /api/promo/drafts/:id/approve` with `{"status": "active"}` body.
-    - **Procurement Forecast Visualizer:**
-      - Render a selector for ingredients.
-      - Fetch predictions from `GET /api/analytics/procurement-forecast/:id` and display projected demand.
+- `[x]` **Milestone 9: Vanilla HTML/CSS/JS Frontend Development**
+  - `[x]` **Phase 9.1: Directory Structure & Serving**
+    - `[x]` Configure Express backend (`api/index.js`) to serve `/public` static folder.
+    - `[x]` Create `public/index.html` (HTML5 skeleton), `public/style.css` (raw styling), and `public/app.js` (vanilla client logic).
+  - `[x]` **Phase 9.2: Auth Session & DOM Toggling**
+    - `[x]` Persist `jwt_token` and `user_details` in browser `localStorage`.
+    - `[x]` Implement a login form submission listener in `app.js` hitting `/api/auth/login`.
+    - `[x]` Toggle layout states using CSS classes (e.g. `.hidden` toggles `.hidden { display: none !important; }` in `style.css`) based on the authenticated user role (`staff` vs `manager`).
+  - `[x]` **Phase 9.3: Staff View (Stock Management)**
+    - `[x]` **Log Belanja Form:** Input elements for ingredient, quantity, unit price, and expiry date. Includes a file input for receipt photo uploads.
+    - `[x]` **Receipt File Upload:** Submit handler to parse inputs and upload receipt image as `FormData` to `POST /api/stock`.
+    - `[x]` **Inventory Table:** List active stock batches fetched from `GET /api/stock`.
+    - `[x]` **Status Modifiers:** Buttons to mark stock as "Used" or "Wasted" (calling `PUT /api/stock/:id/status`).
+    - `[x]` **AI Rescue Trigger:** A button for expiring items (< 2 days) to call `POST /api/promo/rescue`.
+  - `[x]` **Phase 9.4: Manager View (Analytics & AI Approval)**
+    - `[x]` **Waste Index Indicators:** Read statistics from `GET /api/analytics/waste-index` and display Spent, Wasted, and Waste Index Percentage.
+    - `[x]` **Budget Visualizer:** Use raw CSS divs / HTML5 progress bars to visually compare Spent Budget vs Wasted Budget.
+    - `[x]` **Excel Exporter:** Excel report download button executing `window.open` using `?token=...` parameter.
+    - `[x]` **AI Rescue drafts Console:** Render cards from `GET /api/promo/drafts` showing suggested discount percentages. Wire a click handler to execute `PUT /api/promo/drafts/:id/approve`.
+    - `[x]` **Procurement Forecaster:** Dynamic selector to fetch forecasting data from `/api/analytics/procurement-forecast/:id`.
+
+
 
