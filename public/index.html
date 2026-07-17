@@ -1,24 +1,18 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fresh Ledger | Workspace</title>
   <link rel="stylesheet" href="/style.css">
 </head>
+
 <body>
 
   <!-- Header -->
   <header>
-    <div class="logo">
-      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 8px;">
-        <rect width="28" height="28" rx="7" fill="white" fill-opacity="0.2"/>
-        <path d="M7 8h14M7 12h10M7 16h12M7 20h8" stroke="white" stroke-width="2" stroke-linecap="round"/>
-        <circle cx="21" cy="19" r="4" fill="#10b981" stroke="white" stroke-width="1.5"/>
-        <path d="M19.5 19l1 1 2-2" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Fresh Ledger <span class="badge">Workspace</span>
-    </div>
+    <div class="logo">Fresh Ledger <span class="badge">Workspace</span></div>
     <div class="header-right">
       <!-- Settings dropdown wheel menu (hidden by default) -->
       <div id="settings-menu-container" class="dropdown hidden">
@@ -32,7 +26,8 @@
           </div>
           <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 8px 0;">
           <a href="#" class="dropdown-item" id="change-pass-menu-btn">🔑 Ganti Password</a>
-          <a href="#" class="dropdown-item" id="logout-menu-btn" style="color: var(--danger-color); font-weight: bold;">❌ Keluar (Logout)</a>
+          <a href="#" class="dropdown-item" id="logout-menu-btn"
+            style="color: var(--danger-color); font-weight: bold;">❌ Keluar (Logout)</a>
         </div>
       </div>
       <div id="auth-status-guest" class="auth-status">
@@ -48,16 +43,16 @@
     <section id="login-section" class="card" style="max-width: 500px; margin: 40px auto;">
       <h2>Masuk ke Workspace</h2>
       <p class="subtitle">Silakan pilih divisi kerja Anda di bawah ini:</p>
-      
+
       <!-- Login Tabs -->
       <div class="login-tabs">
         <button type="button" id="tab-staff" class="login-tab active">Staf Dapur</button>
         <button type="button" id="tab-manager" class="login-tab">Manager / Owner</button>
       </div>
-      
+
       <form id="login-form">
         <input type="hidden" id="login-role" value="staff">
-        
+
         <div class="form-group">
           <label for="username">Username</label>
           <input type="text" id="username" placeholder="Masukkan username" required>
@@ -66,12 +61,15 @@
           <label for="password">Password</label>
           <input type="password" id="password" placeholder="••••••••" required>
         </div>
-        
+
         <div class="button-group mt-4">
           <button type="submit" class="btn primary block">Login</button>
         </div>
-        
 
+        <div class="button-group mt-4" style="border-top: 1px solid #e5e7eb; padding-top: 20px;">
+          <button type="button" id="quick-staff" class="btn secondary">Masuk sebagai Staf (Demo)</button>
+          <button type="button" id="quick-manager" class="btn secondary">Masuk sebagai Manager (Demo)</button>
+        </div>
       </form>
     </section>
 
@@ -80,19 +78,19 @@
 
       <!-- ================= STAFF WORKSPACE ================= -->
       <div id="staff-workspace" class="hidden">
-        
+
         <div class="dashboard-header mb-4">
           <h2>Dashboard Staf Dapur</h2>
           <p class="subtitle">Kelola penerimaan bahan baku belanja dan penggunaan stok harian.</p>
         </div>
 
         <div class="grid-2">
-          
+
           <!-- Add Stock Card -->
           <section class="card">
             <h2>Input Stok Bahan Baku</h2>
             <p class="subtitle">Catat penerimaan stok baru beserta lampiran nota fisik.</p>
-            
+
             <form id="stock-form" enctype="multipart/form-data">
               <div class="form-group">
                 <label for="ingredient-select">Pilih Bahan Baku</label>
@@ -105,7 +103,7 @@
                   <option value="5">Bawang Merah (kg)</option>
                 </select>
               </div>
-              
+
               <div class="flex-row">
                 <div class="form-group" style="flex: 1;">
                   <label for="quantity">Kuantitas</label>
@@ -118,29 +116,26 @@
               </div>
 
               <div class="form-group">
-                <label for="expiry_date">Tanggal Kedaluwarsa <span style="color: var(--danger-color);">*</span></label>
+                <label for="expiry_date">Tanggal Kedaluwarsa</label>
                 <input type="date" id="expiry_date" required>
               </div>
               <div class="form-group">
-                <label for="receipt-file">Lampiran Nota <span style="color: var(--danger-color);">*</span> <span class="tiny-text">(Wajib diupload)</span></label>
-                <input type="file" id="receipt-file" accept="image/*" style="padding: 6px;" required>
-                <div id="receipt-preview-container" style="display:none; margin-top: 10px;">
-                  <img id="receipt-preview" src="" alt="Preview Nota" style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid #d1d5db; object-fit: contain;">
-                </div>
+                <label for="receipt-file">Lampiran Nota</label>
+                <input type="file" id="receipt-file" accept="image/*" style="padding: 6px;">
               </div>
-              
+
               <button type="submit" class="btn primary block mt-4">Simpan Data Stok</button>
             </form>
           </section>
 
           <!-- Current Inventory Separated Views -->
           <div style="display: flex; flex-direction: column; gap: 24px;">
-            
+
             <!-- Big Scale Total Active Stocks card -->
             <section class="card">
               <h2>Stok Gudang Aktif (Kumulatif)</h2>
               <p class="subtitle">Total gabungan kuantitas bahan baku yang siap diolah dapur.</p>
-              
+
               <div class="overall-stocks-grid" id="big-scale-inventory-grid">
                 <!-- Dynamically populated overall sums -->
                 <p class="no-data">Memuat data inventaris...</p>
@@ -170,17 +165,21 @@
 
             <!-- Expired Ingredients Dashboard card -->
             <section class="card">
-              <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 12px; border-bottom: 1px solid #e5e7eb; padding-bottom: 12px;">
+              <div
+                style="display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; margin-bottom: 12px; border-bottom: 1px solid #e5e7eb; padding-bottom: 12px;">
                 <div>
-                  <h2 style="margin: 0; font-size: 1.25rem; display: flex; align-items: center; gap: 8px;">⚠️ Laporan Bahan Baku Kedaluwarsa</h2>
-                  <p class="subtitle" style="margin: 4px 0 0 0;">Daftar bahan yang terbuang karena kedaluwarsa pada bulan terpilih.</p>
+                  <h2 style="margin: 0; font-size: 1.25rem; display: flex; align-items: center; gap: 8px;">⚠️ Laporan
+                    Bahan Baku Kedaluwarsa</h2>
+                  <p class="subtitle" style="margin: 4px 0 0 0;">Daftar bahan yang terbuang karena kedaluwarsa pada
+                    bulan terpilih.</p>
                 </div>
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <label for="expired-filter-month" style="font-weight: 600; font-size: 0.9rem;">Pilih Bulan:</label>
-                  <input type="month" id="expired-filter-month" style="padding: 6px; border-radius: 6px; border: 1px solid var(--border-color); outline: none; cursor: pointer;">
+                  <input type="month" id="expired-filter-month"
+                    style="padding: 6px; border-radius: 6px; border: 1px solid var(--border-color); outline: none; cursor: pointer;">
                 </div>
               </div>
-              
+
               <div class="table-container">
                 <table>
                   <thead>
@@ -193,7 +192,9 @@
                   </thead>
                   <tbody id="expired-stock-list-body">
                     <!-- Expired batches list -->
-                    <tr><td colspan="4" class="no-data">Memuat data...</td></tr>
+                    <tr>
+                      <td colspan="4" class="no-data">Memuat data...</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
@@ -206,7 +207,7 @@
 
       <!-- ================= MANAGER WORKSPACE ================= -->
       <div id="manager-workspace" class="hidden">
-        
+
         <!-- SECTION 1: LAPORAN BULANAN (MONTHLY PERFORMANCE) -->
         <div class="dashboard-header mb-4">
           <h2>📅 Laporan Kinerja Bulanan</h2>
@@ -214,14 +215,17 @@
         </div>
 
         <!-- Monthly Filter Selection Row -->
-        <div class="filter-row card" style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.2rem; flex-wrap: wrap;">
+        <div class="filter-row card"
+          style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.2rem; flex-wrap: wrap;">
           <div>
-            <h3 style="margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">📅 Pilih Periode Laporan</h3>
+            <h3 style="margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">📅 Pilih Periode
+              Laporan</h3>
             <p class="subtitle" style="margin: 0.2rem 0 0 0;">Ubah bulan untuk memperbarui grafik kinerja bulanan.</p>
           </div>
           <div style="display: flex; align-items: center; gap: 0.8rem;">
             <label for="filter-month" style="font-weight: bold; font-size: 0.95rem;">Bulan Laporan:</label>
-            <input type="month" id="filter-month" style="padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border-color); font-family: inherit; outline: none; background: white; cursor: pointer; transition: border-color 0.2s;">
+            <input type="month" id="filter-month"
+              style="padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border-color); font-family: inherit; outline: none; background: white; cursor: pointer; transition: border-color 0.2s;">
           </div>
         </div>
 
@@ -250,7 +254,7 @@
         </div>
 
         <div class="grid-2 mt-4">
-          
+
           <!-- AI Rescue Drafts -->
           <section class="card">
             <h2>Rekomendasi Food Rescue</h2>
@@ -265,7 +269,7 @@
           <section class="card">
             <h2>Laporan & Ekspor Bulanan</h2>
             <p class="subtitle">Unduh mutasi log operasional bulanan ke dalam berkas Excel.</p>
-            
+
             <div class="report-box mb-4 mt-4">
               <h3>Unduh Laporan Inventaris</h3>
               <p>Ekspor seluruh mutasi data inventaris bulan terpilih ke format spreadsheet (.xlsx).</p>
@@ -275,7 +279,8 @@
         </div>
 
         <!-- SECTION 2: TOTAL KESELURUHAN INVENTORI & PREDIKSI (OVERALL) -->
-        <div class="dashboard-header mt-4" style="border-top: 2px dashed var(--border-color); padding-top: 32px; margin-top: 32px;">
+        <div class="dashboard-header mt-4"
+          style="border-top: 2px dashed var(--border-color); padding-top: 32px; margin-top: 32px;">
           <h2>📦 Total Keseluruhan Inventori & Proyeksi ML</h2>
           <p class="subtitle">Status total stok gudang dan peramalan pengadaan masa depan.</p>
         </div>
@@ -285,10 +290,14 @@
           <section class="card">
             <h2>Kumulatif Aset Inventaris Aktif</h2>
             <p class="subtitle">Perhitungan total valuasi aset berjalan dan kuantitas bahan yang tersedia.</p>
-            
-            <div class="overall-valuation-box mb-4" style="background-color: #f0fdf4; border: 1px solid #bbf7d0; padding: 16px; border-radius: 8px;">
-              <h4 style="margin: 0; color: #166534; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">Total Nilai Aset Gudang</h4>
-              <p id="overall-asset-valuation" style="margin: 8px 0 0 0; font-size: 1.8rem; font-weight: bold; color: #15803d;">Rp 0</p>
+
+            <div class="overall-valuation-box mb-4"
+              style="background-color: #f0fdf4; border: 1px solid #bbf7d0; padding: 16px; border-radius: 8px;">
+              <h4
+                style="margin: 0; color: #166534; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 0.05em;">
+                Total Nilai Aset Gudang</h4>
+              <p id="overall-asset-valuation"
+                style="margin: 8px 0 0 0; font-size: 1.8rem; font-weight: bold; color: #15803d;">Rp 0</p>
             </div>
 
             <div class="table-container">
@@ -311,12 +320,13 @@
           <section class="card">
             <h2>Prediksi Kebutuhan Pengadaan (ML)</h2>
             <p class="subtitle">Prediksi kebutuhan bahan baku 30 hari ke depan berdasarkan riwayat penjualan.</p>
-            
+
             <div class="report-box" style="margin-top: 16px;">
               <h3>Proyeksi Pengadaan Terpandu</h3>
               <p>Pilih jenis bahan baku untuk memprediksi jumlah pembelian berikutnya.</p>
               <div class="flex-row mt-4">
-                <select id="forecast-select" style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
+                <select id="forecast-select"
+                  style="padding: 10px; border-radius: 6px; border: 1px solid var(--border-color);">
                   <option value="1">Daging Sapi</option>
                   <option value="2">Ayam</option>
                   <option value="3">Telur</option>
@@ -325,9 +335,11 @@
                 </select>
                 <button id="forecast-btn" class="btn primary">Proyeksikan</button>
               </div>
-              <div id="forecast-result" class="forecast-result hidden" style="margin-top: 16px; padding: 12px; background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px;">
-                <p style="margin: 0;"><strong>Rekomendasi Restock:</strong> <span id="forecast-val" style="font-weight: bold; color: var(--primary-color);">0</span></p>
-
+              <div id="forecast-result" class="forecast-result hidden"
+                style="margin-top: 16px; padding: 12px; background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px;">
+                <p style="margin: 0;"><strong>Rekomendasi Restock:</strong> <span id="forecast-val"
+                    style="font-weight: bold; color: var(--primary-color);">0</span></p>
+                <p class="tiny-text" style="margin: 4px 0 0 0;">Metode Analitik: <span id="forecast-method">-</span></p>
               </div>
             </div>
           </section>
@@ -369,4 +381,5 @@
 
   <script src="/app.js"></script>
 </body>
+
 </html>
