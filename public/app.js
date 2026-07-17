@@ -233,6 +233,26 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Receipt modal close events
+  const receiptModal = document.getElementById('receipt-modal');
+  const receiptModalCloseBtn = document.getElementById('receipt-modal-close-btn');
+
+  if (receiptModalCloseBtn) {
+    receiptModalCloseBtn.addEventListener('click', () => {
+      receiptModal.classList.add('hidden');
+      document.getElementById('receipt-modal-img').src = '';
+    });
+  }
+
+  if (receiptModal) {
+    receiptModal.addEventListener('click', (e) => {
+      if (e.target === receiptModal) {
+        receiptModal.classList.add('hidden');
+        document.getElementById('receipt-modal-img').src = '';
+      }
+    });
+  }
+
   if (token && user) {
     showWorkspace();
   } else {
@@ -396,12 +416,11 @@ function renderExpiryBatches(stocks) {
     // Otherwise fall back to the legacy path-based URL.
     let receiptLink = '';
     if (item.receipt_image_path) {
-      if (item.receipt_image_path.startsWith('data:')) {
-        // Base64 image stored in database — open in new tab via a blob/data URL
-        receiptLink = `<br><a href="${item.receipt_image_path}" target="_blank" class="tiny-text" style="color: var(--primary-color)">Lihat Nota 📄</a>`;
-      } else {
-        receiptLink = `<br><a href="${API_URL}${item.receipt_image_path}" target="_blank" class="tiny-text" style="color: var(--primary-color)">Lihat Nota 📄</a>`;
-      }
+      const fullUrl = item.receipt_image_path.startsWith('data:') 
+        ? item.receipt_image_path 
+        : `${API_URL}${item.receipt_image_path}`;
+      const safeUrl = fullUrl.replace(/'/g, "\\'");
+      receiptLink = `<br><a href="#" onclick="event.preventDefault(); showReceiptModal('${safeUrl}')" class="tiny-text" style="color: var(--primary-color)">Lihat Nota 📄</a>`;
     }
 
     const tr = document.createElement('tr');
@@ -789,3 +808,13 @@ async function loadExpiredStock(month) {
     expiredStockListBody.innerHTML = `<tr><td colspan="4" class="no-data" style="color: var(--danger-color)">Error: ${err.message}</td></tr>`;
   }
 }
+
+// Global receipt preview modal display
+window.showReceiptModal = (imgSrc) => {
+  const modal = document.getElementById('receipt-modal');
+  const img = document.getElementById('receipt-modal-img');
+  if (modal && img) {
+    img.src = imgSrc;
+    modal.classList.remove('hidden');
+  }
+};
