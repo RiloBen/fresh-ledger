@@ -105,13 +105,27 @@ CREATE TABLE sales_history (
 * **GET `/api/stock`**
   - Response: `200 OK` -> `[{"id": 1, "name": "Daging Sapi", "quantity": 10.0, "expiry_date": "2026-07-20", "status": "active"}]`
 * **PUT `/api/stock/:id/status`**
-  - Request: `{"status": "used" | "wasted"}`
-  - Response: `200 OK` -> `{"message": "Stock status updated"}`
+  - Request: `{"status": "used" | "wasted", "quantity_to_deduct": number}`
+    - If status is `used`: Deducts `quantity_to_deduct` from `remaining_quantity`. If `remaining_quantity` reaches 0, the status transitions to `used`.
+    - If status is `wasted`: The entire remaining quantity of the batch is marked wasted, and status changes to `wasted`.
+  - Response: `200 OK` -> `{"message": "Stock batch updated successfully", "remaining_quantity": 0.00}`
 
 ### **Analytics & Reports**
 * **GET `/api/analytics/waste-index`**
   - Query Parameter: `month` (optional, format: `YYYY-MM`, e.g., `2026-07`. Filters calculation to only include stock batches created in the selected month).
-  - Response: `200 OK` -> `{"waste_index": 12.5, "total_spent": 1000000, "total_wasted": 125000}`
+  - Response: `200 OK` ->
+    ```json
+    {
+      "waste_index": 28.5,
+      "total_spent": 1000000,
+      "total_wasted": 285000,
+      "total_wasted_quantity": 42.5,
+      "wasted_items": [
+        { "name": "Daging Sapi", "quantity": 10.0, "unit": "kg" },
+        { "name": "Bawang", "quantity": 5.5, "unit": "kg" }
+      ]
+    }
+    ```
 * **GET `/api/analytics/export-excel`**
   - Query Parameters:
     - `token` (optional, can be passed as `?token=JWT_TOKEN` for direct downloads via `window.open`).

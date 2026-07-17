@@ -68,28 +68,55 @@ exports.listStock = async (req, res) => {
 // PUT /api/stock/:id/status - Update status of a batch (used / wasted)
 exports.updateStockStatus = async (req, res) => {
   const { id } = req.params;
-  const { status } = req.body;
+  const { status, quantity_to_deduct } = req.body;
 
   if (!status || !['active', 'used', 'wasted'].includes(status)) {
     return res.status(400).json({ error: 'Valid status ("active", "used", "wasted") is required' });
   }
 
   try {
-    // If setting status to used or wasted, remaining quantity is set to 0
-    const remainingQtyValue = status === 'active' ? 'quantity' : '0.00';
-    
-    const [result] = await db.query(
-      `UPDATE stock_batches 
-       SET status = ?, remaining_quantity = ${remainingQtyValue}
-       WHERE id = ?`,
-      [status, parseInt(id, 10)]
-    );
-
-    if (result.affectedRows === 0) {
+    // Check current stock batch details
+    const [batches] = await db.query('SELECT remaining_quantity, quantity FROM stock_batches WHERE id = ?', [parseInt(id, 10)]);
+    if (batches.length === 0) {
       return res.status(404).json({ error: 'Stock batch not found' });
     }
 
-    res.status(200).json({ message: `Stock batch status updated to ${status}` });
+    const currentRemaining = parseFloat(batches[0].remaining_quantity);
+    let newRemaining = currentRemaining;
+    let targetStatus = status;
+
+    if (status === 'used') {
+      const deduct = quantity_to_deduct !== undefined ? parseFloat(quantity_to_deduct) : currentRemaining;
+      if (isNaN(deduct) || deduct <= 0) {
+        return res.status(400).json({ error: 'quantity_to_deduct must be a positive number' });
+      }
+      newRemaining = currentRemaining - deduct;
+      if (newRemaining <= 0) {
+        newRemaining = 0.00;
+        targetStatus = 'used';
+      } else {
+        targetStatus = 'active'; // remains active since there's leftover quantity
+      }
+    } else if (status === 'wasted') {
+      newRemaining = 0.00;
+      targetStatus = 'wasted';
+    } else if (status === 'active') {
+      newRemaining = parseFloat(batches[0].quantity);
+      targetStatus = 'active';
+    }
+
+    await db.query(
+      `UPDATE stock_batches 
+       SET status = ?, remaining_quantity = ?
+       WHERE id = ?`,
+      [targetStatus, newRemaining, parseInt(id, 10)]
+    );
+
+    res.status(200).json({ 
+      message: `Stock batch updated successfully`, 
+      status: targetStatus,
+      remaining_quantity: newRemaining 
+    });
   } catch (error) {
     console.error('[StockCtrl] Error updating stock status:', error);
     res.status(500).json({ error: 'Internal Server Error', details: error.message });

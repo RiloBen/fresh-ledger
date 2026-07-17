@@ -18,6 +18,10 @@
 ### FR-1: User Management & Authentication (RBAC)
 - The system must support two roles: `staff` and `manager`.
 - Users must login with a username and password.
+- **Separate Login UI Interface:** The login page must separate the inputs or tabs for different roles (e.g. distinct sections or tabs for Staff Login vs Manager Login).
+- **Settings Gear/Wheel Menu:** Both users must have access to a "gear/wheel" settings dropdown menu in the header containing:
+  - Account Profile/Settings options.
+  - Logout action.
 - State access control:
   - `staff` can access stock input, update stock status, and propose promotions.
   - `manager` can access the analytics dashboard, approve promotion drafts, and export Excel reports.
@@ -31,22 +35,33 @@
   - Total Harga Nota (`decimal`, required)
   - Kategori (`string`, dropdown list, required)
   - Expiry Date (`date`, required)
+- **Separated Inventory Views (Staff side):**
+  - **Big Scale Overall Management:** Displays the sum total of active stocks grouped by ingredient names (aggregated quantities).
+  - **Expiry-Grouped Batches:** Displays individual batches sorted and grouped by expiration dates to track details.
 - UX Optimizations:
   - Kursor must automatically focus (`autofocus`) on the Ingredient Name field upon loading the form.
   - The form is submitted manually by the staff (no AI visual parse).
 
-### FR-3: Stock Management
-- Staf can log/update status of stock batches:
-  - `used`: Raw material consumed for cooking.
-  - `wasted`: Raw material spoiled and thrown away.
+### FR-3: Stock Management & Partial Deductions
+- Staff can log/update status of stock batches:
+  - **Used (with Quantity Input):** When using stock, staff inputs the *amount to use*.
+    - If `used_amount < remaining_quantity`, the batch quantity is reduced, and its status remains `active`.
+    - If `used_amount >= remaining_quantity`, the batch is fully consumed, and status changes to `used`.
+  - `wasted`: Raw material spoiled and thrown away (entire remaining batch becomes 0 and status is `wasted`).
   - `critical`: Raw material with remaining shelf life < 2 days.
 
 ### FR-4: Monthly Waste Index Ledger & Excel Export (Manager side)
 - **Monthly Filter Menu:** The Manager dashboard must feature a monthly selection menu (e.g., using a month input element) allowing the manager to filter analytics and reports by a specific month.
-- **Dynamic Analytics Dashboard:**
-  - Interactive metrics (Spent Budget, Wasted Budget, and Waste Index Ledger) and comparison charts must adjust dynamically to only display data from the selected month.
-  - Calculated **Waste Index (WI)** formula (filtered by selected month):
-    $$\text{Waste Index} = \left(\frac{\text{Total Nominal Wasted}}{\text{Total Nominal Spent}}\right) \times 100\%$$
+- **Differentiated Analytics Sections:**
+  - **Monthly Performance Report:** Waste Index, total spent, total wasted, and AI Rescue drafts matching the selected month.
+  - **Total Overall Inventory:** Summary of all existing active stock quantities and total current asset valuation.
+- **Differentiated Efficiency Scale Coloring & Alerts (Waste Index):**
+  - The Waste Index card in the upper-right section must dynamically scale its border/color based on the efficiency rate:
+    - **Green (Efficient):** Waste Index < 15%
+    - **Yellow (Warning):** Waste Index 15% - 25%
+      - Must display a warning notification message: *"Waste Index mencapai [persentase]%. Kerugian akibat bahan kedaluwarsa mulai memengaruhi efisiensi operasional. Tinjau kembali frekuensi restock dan pola konsumsi bahan."*
+    - **Red (Critical/Inefficient):** Waste Index > 25%
+      - Must display a critical notification message: *"Waste Index berada pada level kritis [persentase]%. Sebanyak [kuantitas terbuang] [satuan] bahan makanan telah terbuang karena melewati masa kedaluwarsa. Disarankan mengurangi jumlah pembelian pada periode berikutnya."*
 - **Monthly Excel Export:** The export button must download an Excel `.xlsx` file containing stock transaction logs restricted *only* to the selected month, while preserving the exact layout format:
   - Transaction Date, Ingredient Name, Status (Used/Wasted), Quantity, Unit Price, Total Price, and Receipt Image Link/ID.
 

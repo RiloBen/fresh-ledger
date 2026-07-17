@@ -81,3 +81,25 @@
   - `[x]` Update `getWasteIndex` in `src/controllers/analyticsController.js` to filter calculations by month if provided.
   - `[x]` Update `exportExcel` in `src/controllers/analyticsController.js` to filter records by month and append the month to the file name.
   - `[x]` Verify dashboard metrics updates and Excel downloaded reports filter by month.
+
+- `[x]` **Milestone 11: Revisions (Separated Inventory Views, Quantity Deductions, Login Customizations, and Dashboards)**
+  - `[x]` **Staff View Revisions:**
+    - `[x]` Group and aggregate active stock to display a "Big Scale Overview" of total quantities for each ingredient.
+    - `[x]` Implement a separate "Expiry-Grouped Batches" list displaying individual batches ordered by closest expiration dates.
+    - `[x]` Add a modal/prompt or inline input field for "Quantity to Use" next to the "Used" action button.
+    - `[x]` Modify `PUT /api/stock/:id/status` controller in `src/controllers/stockController.js` to process `quantity_to_deduct`:
+      - Deduct quantity from `remaining_quantity`.
+      - If `remaining_quantity` drops to 0, mark status as `used`. Otherwise, keep status `active`.
+  - `[x]` **Login Page Revisions:**
+    - `[x]` Split the login form UI into two distinct paths/tabs: "Staff Login" and "Manager/Owner Login" (visual division).
+  - `[x]` **Gear/Wheel Settings Menu:**
+    - `[x]` Replace logout button in the header with a gear/wheel dropdown settings menu containing account settings (username, role) and the logout option.
+  - `[x]` **Manager View Revisions:**
+    - `[x]` Separate dashboard report panels into two sections: "Laporan Bulanan" (filtered by selected month) and "Total Keseluruhan Inventori" (unfiltered, total assets value and total active item stocks).
+    - `[x]` Apply conditional CSS color styling (Green, Yellow, Red) and alert notifications for the efficiency card based on the Waste Index value:
+      - Green (Efficient): Waste Index < 15% (class `.index-green`, no warning).
+      - Yellow (Warning): Waste Index 15% - 25% (class `.index-yellow`). Shows: *"Waste Index mencapai [persentase]%. Kerugian akibat bahan kedaluwarsa mulai memengaruhi efisiensi operasional. Tinjau kembali frekuensi restock dan pola konsumsi bahan."*
+      - Red (Critical): Waste Index > 25% (class `.index-red`). Shows: *"Waste Index berada pada level kritis [persentase]%. Sebanyak [kuantitas terbuang] [satuan] bahan makanan telah terbuang karena melewati masa kedaluwarsa. Disarankan mengurangi jumlah pembelian pada periode berikutnya."*
+    - `[x]` Update `getWasteIndex` in `src/controllers/analyticsController.js` to calculate and return `total_wasted_quantity` and `wasted_items` list.
+
+

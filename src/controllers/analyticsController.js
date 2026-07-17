@@ -8,21 +8,39 @@ exports.getWasteIndex = async (req, res) => {
   try {
     let spentQuery = 'SELECT SUM(total_price) as spent FROM stock_batches';
     let wastedQuery = "SELECT SUM(total_price) as wasted FROM stock_batches WHERE status = 'wasted'";
+    let qtyWastedQuery = "SELECT SUM(quantity) as qty_wasted FROM stock_batches WHERE status = 'wasted'";
+    let wastedItemsQuery = `
+      SELECT i.name, SUM(sb.quantity) as quantity, i.unit 
+      FROM stock_batches sb
+      JOIN ingredients i ON sb.ingredient_id = i.id
+      WHERE sb.status = 'wasted'
+    `;
     const spentParams = [];
     const wastedParams = [];
+    const qtyWastedParams = [];
+    const wastedItemsParams = [];
 
     if (month) {
       spentQuery += " WHERE DATE_FORMAT(created_at, '%Y-%m') = ?";
       spentParams.push(month);
       wastedQuery += " AND DATE_FORMAT(created_at, '%Y-%m') = ?";
       wastedParams.push(month);
+      qtyWastedQuery += " AND DATE_FORMAT(created_at, '%Y-%m') = ?";
+      qtyWastedParams.push(month);
+      wastedItemsQuery += " AND DATE_FORMAT(sb.created_at, '%Y-%m') = ?";
+      wastedItemsParams.push(month);
     }
+
+    wastedItemsQuery += " GROUP BY i.name, i.unit";
 
     const [spentRow] = await db.query(spentQuery, spentParams);
     const [wastedRow] = await db.query(wastedQuery, wastedParams);
+    const [qtyWastedRow] = await db.query(qtyWastedQuery, qtyWastedParams);
+    const [wastedItemsRows] = await db.query(wastedItemsQuery, wastedItemsParams);
 
     const totalSpent = parseFloat(spentRow[0].spent || 0);
     const totalWasted = parseFloat(wastedRow[0].wasted || 0);
+    const totalWastedQty = parseFloat(qtyWastedRow[0].qty_wasted || 0);
     
     // Compute Waste Index
     const wasteIndex = totalSpent > 0 ? ((totalWasted / totalSpent) * 100).toFixed(2) : '0.00';
@@ -30,7 +48,13 @@ exports.getWasteIndex = async (req, res) => {
     res.status(200).json({
       waste_index: parseFloat(wasteIndex),
       total_spent: totalSpent,
-      total_wasted: totalWasted
+      total_wasted: totalWasted,
+      total_wasted_quantity: totalWastedQty,
+      wasted_items: wastedItemsRows.map(row => ({
+        name: row.name,
+        quantity: parseFloat(row.quantity || 0),
+        unit: row.unit
+      }))
     });
   } catch (error) {
     console.error('[AnalyticsCtrl] Error getting waste index:', error);
