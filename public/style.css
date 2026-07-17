@@ -361,6 +361,10 @@ th {
 .flex-row select { flex: 2; }
 .flex-row button { flex: 1; }
 
+#logout-btn {
+  flex: none;
+}
+
 .report-box {
   padding: 16px;
   border-radius: 8px;
