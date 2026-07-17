@@ -248,18 +248,19 @@ function showWorkspace() {
 // LOGINS
 loginForm.addEventListener('submit', async (e) => {
   e.preventDefault();
-  await performLogin(usernameInput.value, passwordInput.value);
+  const selectedRole = loginRoleInput ? loginRoleInput.value : null;
+  await performLogin(usernameInput.value, passwordInput.value, selectedRole);
 });
 
 quickManagerBtn.addEventListener('click', async () => {
-  await performLogin('manager', 'manager123');
+  await performLogin('manager', 'manager123', 'manager');
 });
 
 quickStaffBtn.addEventListener('click', async () => {
-  await performLogin('staff', 'staff123');
+  await performLogin('staff', 'staff123', 'staff');
 });
 
-async function performLogin(username, password) {
+async function performLogin(username, password, expectedRole) {
   try {
     const res = await fetch(`${API_URL}/api/auth/login`, {
       method: 'POST',
@@ -269,13 +270,20 @@ async function performLogin(username, password) {
 
     const data = await res.json();
     if (res.ok) {
+      // Role validation: ensure the logged-in user matches the selected tab
+      if (expectedRole && data.user.role !== expectedRole) {
+        const tabLabel = expectedRole === 'staff' ? 'Staf Dapur' : 'Manager / Owner';
+        alert(`Akun ini bukan akun ${tabLabel}. Silakan pilih tab yang sesuai atau gunakan akun yang benar.`);
+        return;
+      }
+
       token = data.token;
       user = data.user;
       localStorage.setItem('jwt_token', token);
       localStorage.setItem('user_details', JSON.stringify(user));
       showWorkspace();
     } else {
-      alert(`Login failed: ${data.error || 'Unknown error'}`);
+      alert(`Login gagal: ${data.error || 'Unknown error'}`);
     }
   } catch (err) {
     alert(`Error during login connection: ${err.message}`);

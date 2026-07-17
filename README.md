@@ -87,6 +87,20 @@ Jika Ruben ingin menjalankan modul peramalan belanja secara lokal:
 
 ---
 
+## 🔑 Akun Demo Default (Login Credentials)
+
+Setelah menjalankan `npm run seed`, Anda dapat melakukan login menggunakan akun demo berikut:
+
+*   **Akun Manager / Owner:**
+    *   **Username:** `manager`
+    *   **Password:** `manager123`
+
+*   **Akun Kitchen Staff:**
+    *   **Username:** `staff`
+    *   **Password:** `staff123`
+
+---
+
 ## ☁️ Deployment ke Vercel
 
 Proyek ini telah dikonfigurasi menggunakan `vercel.json` agar dapat langsung dideploy ke **Vercel** sebagai Serverless Functions (mendukung Node.js dan Python secara bersamaan).
