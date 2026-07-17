@@ -101,5 +101,12 @@
       - Yellow (Warning): Waste Index 15% - 25% (class `.index-yellow`). Shows: *"Waste Index mencapai [persentase]%. Kerugian akibat bahan kedaluwarsa mulai memengaruhi efisiensi operasional. Tinjau kembali frekuensi restock dan pola konsumsi bahan."*
       - Red (Critical): Waste Index > 25% (class `.index-red`). Shows: *"Waste Index berada pada level kritis [persentase]%. Sebanyak [kuantitas terbuang] [satuan] bahan makanan telah terbuang karena melewati masa kedaluwarsa. Disarankan mengurangi jumlah pembelian pada periode berikutnya."*
     - `[x]` Update `getWasteIndex` in `src/controllers/analyticsController.js` to calculate and return `total_wasted_quantity` and `wasted_items` list.
-
-
+- `[x]` **Milestone 12: Change Password Feature**
+  - `[x]` **Backend Updates:**
+    - `[x]` Add `changePassword` endpoint controller inside `src/controllers/authController.js`.
+    - `[x]` Define route `POST /api/auth/change-password` in `src/routes/auth.js` protected by `verifyToken` middleware.
+  - `[x]` **Frontend UI Revisions:**
+    - `[x]` Replace "Pengaturan Akun" dropdown link in `public/index.html` with "Ganti Password".
+    - `[x]` Design and embed a hidden HTML modal dialog for Change Password in `public/index.html`.
+    - `[x]` Style the modal dialog in `public/style.css` (overlay, input fields, visual consistency).
+    - `[x]` Add script event handlers in `public/app.js` to open the modal, validate input fields, fetch the API, and close the modal.

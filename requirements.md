@@ -20,7 +20,7 @@
 - Users must login with a username and password.
 - **Separate Login UI Interface:** The login page must separate the inputs or tabs for different roles (e.g. distinct sections or tabs for Staff Login vs Manager Login).
 - **Settings Gear/Wheel Menu:** Both users must have access to a "gear/wheel" settings dropdown menu in the header containing:
-  - Account Profile/Settings options.
+  - **Change Password:** Access to a password update form (requires validation of current password).
   - Logout action.
 - State access control:
   - `staff` can access stock input, update stock status, and propose promotions.

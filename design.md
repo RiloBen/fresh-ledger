@@ -97,6 +97,9 @@ CREATE TABLE sales_history (
 * **POST `/api/auth/login`**
   - Request: `{"username": "rilo", "password": "password123"}`
   - Response: `200 OK` -> `{"token": "JWT_TOKEN", "user": {"id": 1, "username": "rilo", "role": "manager"}}`
+* **POST `/api/auth/change-password` (JWT authenticated)**
+  - Request: `{"old_password": "oldpassword123", "new_password": "newpassword123"}`
+  - Response: `200 OK` -> `{"message": "Password changed successfully"}`
 
 ### **Stock Endpoints**
 * **POST `/api/stock` (Form-data for receipt upload + manual fields)**

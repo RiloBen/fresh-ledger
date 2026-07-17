@@ -23,7 +23,7 @@
             <strong id="dropdown-username">username</strong>
           </div>
           <hr style="border: 0; border-top: 1px solid #e5e7eb; margin: 8px 0;">
-          <a href="#" class="dropdown-item" onclick="alert('Demo Mode: Pengaturan akun belum tersedia.')">⚙️ Pengaturan Akun</a>
+          <a href="#" class="dropdown-item" id="change-pass-menu-btn">🔑 Ganti Password</a>
           <a href="#" class="dropdown-item" id="logout-menu-btn" style="color: var(--danger-color); font-weight: bold;">❌ Keluar (Logout)</a>
         </div>
       </div>
@@ -299,6 +299,34 @@
     </div>
 
   </main>
+
+  <!-- CHANGE PASSWORD MODAL -->
+  <div id="change-pass-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+      <div class="modal-header" style="margin-bottom: 16px; border-bottom: 1px solid #e5e7eb; padding-bottom: 12px;">
+        <h3 style="margin: 0; font-size: 1.2rem; display: flex; align-items: center; gap: 8px;">🔑 Ganti Password</h3>
+        <p class="subtitle" style="margin: 4px 0 0 0;">Perbarui password keamanan akun Anda.</p>
+      </div>
+      <form id="change-pass-form">
+        <div class="form-group">
+          <label for="old-password">Password Saat Ini</label>
+          <input type="password" id="old-password" placeholder="••••••••" required>
+        </div>
+        <div class="form-group">
+          <label for="new-password">Password Baru</label>
+          <input type="password" id="new-password" placeholder="Minimal 6 karakter" required>
+        </div>
+        <div class="form-group">
+          <label for="confirm-new-password">Konfirmasi Password Baru</label>
+          <input type="password" id="confirm-new-password" placeholder="Ulangi password baru" required>
+        </div>
+        <div class="flex-row mt-4" style="justify-content: flex-end; gap: 12px;">
+          <button type="button" id="change-pass-cancel-btn" class="btn secondary" style="flex: none;">Batal</button>
+          <button type="submit" class="btn primary" style="flex: none; min-width: 100px;">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <script src="/app.js"></script>
 </body>

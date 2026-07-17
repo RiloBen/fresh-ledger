@@ -44,3 +44,37 @@ exports.login = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error', details: error.message });
   }
 };
+
+exports.changePassword = async (req, res) => {
+  const { old_password, new_password } = req.body;
+  const userId = req.user.id;
+
+  if (!old_password || !new_password) {
+    return res.status(400).json({ error: 'old_password and new_password are required' });
+  }
+
+  if (new_password.length < 6) {
+    return res.status(400).json({ error: 'new_password must be at least 6 characters long' });
+  }
+
+  try {
+    const [rows] = await db.query('SELECT password FROM users WHERE id = ?', [userId]);
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const user = rows[0];
+    const isMatch = await bcrypt.compare(old_password, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ error: 'Password lama salah' });
+    }
+
+    const hashedNewPassword = await bcrypt.hash(new_password, 10);
+    await db.query('UPDATE users SET password = ? WHERE id = ?', [hashedNewPassword, userId]);
+
+    res.status(200).json({ message: 'Password updated successfully' });
+  } catch (error) {
+    console.error('[AuthCtrl] Error during changePassword:', error);
+    res.status(500).json({ error: 'Internal Server Error', details: error.message });
+  }
+};

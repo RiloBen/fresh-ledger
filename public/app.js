@@ -20,6 +20,13 @@ const headerUsername = document.getElementById('header-username');
 const dropdownUsername = document.getElementById('dropdown-username');
 const dropdownRole = document.getElementById('dropdown-role');
 const logoutMenuBtn = document.getElementById('logout-menu-btn');
+const changePassMenuBtn = document.getElementById('change-pass-menu-btn');
+const changePassModal = document.getElementById('change-pass-modal');
+const changePassCancelBtn = document.getElementById('change-pass-cancel-btn');
+const changePassForm = document.getElementById('change-pass-form');
+const oldPasswordInput = document.getElementById('old-password');
+const newPasswordInput = document.getElementById('new-password');
+const confirmNewPasswordInput = document.getElementById('confirm-new-password');
 
 // Login Form Elements
 const loginForm = document.getElementById('login-form');
@@ -125,6 +132,68 @@ document.addEventListener('DOMContentLoaded', () => {
     logoutMenuBtn.addEventListener('click', (e) => {
       e.preventDefault();
       performLogout();
+    });
+  }
+
+  if (changePassMenuBtn) {
+    changePassMenuBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      changePassModal.classList.remove('hidden');
+      if (settingsDropdownContent) settingsDropdownContent.classList.remove('show');
+    });
+  }
+
+  if (changePassCancelBtn) {
+    changePassCancelBtn.addEventListener('click', () => {
+      changePassModal.classList.add('hidden');
+      changePassForm.reset();
+    });
+  }
+
+  if (changePassModal) {
+    changePassModal.addEventListener('click', (e) => {
+      if (e.target === changePassModal) {
+        changePassModal.classList.add('hidden');
+        changePassForm.reset();
+      }
+    });
+  }
+
+  if (changePassForm) {
+    changePassForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (newPasswordInput.value.length < 6) {
+        alert('Password baru minimal harus 6 karakter!');
+        return;
+      }
+
+      if (newPasswordInput.value !== confirmNewPasswordInput.value) {
+        alert('Konfirmasi password baru tidak cocok!');
+        return;
+      }
+
+      try {
+        const res = await fetch(`${API_URL}/api/auth/change-password`, {
+          method: 'POST',
+          headers: getHeaders(),
+          body: JSON.stringify({
+            old_password: oldPasswordInput.value,
+            new_password: newPasswordInput.value
+          })
+        });
+
+        if (res.ok) {
+          alert('Password berhasil diperbarui!');
+          changePassModal.classList.add('hidden');
+          changePassForm.reset();
+        } else {
+          const data = await res.json();
+          alert(`Gagal memperbarui password: ${data.error || 'Terjadi kesalahan'}`);
+        }
+      } catch (err) {
+        alert(`Error: ${err.message}`);
+      }
     });
   }
 
