@@ -217,3 +217,23 @@ fresh-ledger/
 ├── package.json             # Node dependencies
 └── requirements.txt         # Python dependencies
 ```
+
+---
+
+## 6. UI Design Notes & Rules
+
+### Header
+- The header must include an SVG icon logo (ledger/checkmark motif) rendered inline before the application title "Fresh Ledger".
+- The badge label next to the title reads "Workspace".
+
+### Login Page
+- **No Demo Buttons:** Quick-access demo login buttons (`Masuk sebagai Staf (Demo)`, `Masuk sebagai Manager (Demo)`) must be **removed**. Users authenticate with real credentials only.
+- Role selection is handled by tab switching (Staff / Manager), not demo shortcuts.
+
+### Stock Input Form (Staff)
+- **Receipt Upload (Mandatory):** The `Lampiran Nota` file input must have the `required` attribute. The submit button is disabled by native HTML5 validation until a file is selected.
+- **Receipt Preview:** A live `<img>` preview element (`#receipt-preview`) must appear below the file input as soon as the user selects an image file. The preview disappears when the form is reset after a successful submission.
+- **Expiry Date Min:** The `expiry_date` input must set its `min` attribute to tomorrow's date on `DOMContentLoaded`, preventing selection of today or past dates.
+
+### Forecast Result (Manager)
+- The "Metode Analitik" paragraph (`#forecast-method`) is **not shown** in the forecast result card. Only the recommended restock quantity (`#forecast-val`) is displayed.

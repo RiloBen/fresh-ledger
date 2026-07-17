@@ -120,3 +120,11 @@
     - `[x]` Refactor "Waste" button in the batches table to read and send the quantity to update status in `public/app.js`.
     - `[x]` Bind listener to `#expired-filter-month` to fetch and load expired ingredients for the selected month in `public/app.js`.
 
+- `[x]` **Milestone 14: UI Polish Revisions (Mandatory Receipt, Expiry Validation, Preview, Logo, Demo Removal)**
+  - `[x]` **Mandatory Receipt Upload:** Add `required` attribute to `#receipt-file` in `public/index.html`. Update label to mark as mandatory.
+  - `[x]` **Receipt Image Preview:** Add `#receipt-preview-container` + `#receipt-preview` img in `public/index.html`. Wire FileReader `change` listener in `public/app.js` to display live preview. Clear preview after successful submit.
+  - `[x]` **Expiry Date Minimum Validation:** Set `min` attribute on `#expiry_date` to tomorrow's date in `DOMContentLoaded` in `public/app.js`.
+  - `[x]` **Remove Demo Login Buttons:** Remove quick-staff and quick-manager button group from `public/index.html`. Remove their event listeners from `public/app.js`.
+  - `[x]` **Header Logo Placeholder:** Add inline SVG ledger/checkmark logo in the `<header>` in `public/index.html`.
+  - `[x]` **Remove Forecast Method Display:** Remove `#forecast-method` paragraph from forecast result in `public/index.html`. Guard its JS reference with null check in `public/app.js`.
+  - `[x]` Update `requirements.md`, `design.md`, and `tasks.md` to reflect all revisions.

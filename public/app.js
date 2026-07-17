@@ -87,10 +87,17 @@ function formatRupiah(value) {
 
 // Initial Run
 document.addEventListener('DOMContentLoaded', () => {
-  // Set default date for stock expiry (today + 5 days)
-  const futureDate = new Date();
-  futureDate.setDate(futureDate.getDate() + 5);
-  if (expInput) expInput.value = futureDate.toISOString().split('T')[0];
+  // Set default date for stock expiry (today + 1 day as minimum)
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().split('T')[0];
+  if (expInput) {
+    expInput.min = tomorrowStr;
+    // Set default value to 5 days from now (but no earlier than tomorrow)
+    const defaultExpiry = new Date();
+    defaultExpiry.setDate(defaultExpiry.getDate() + 5);
+    expInput.value = defaultExpiry.toISOString().split('T')[0];
+  }
 
   // Set default month for filter-month to current month (YYYY-MM)
   const today = new Date();
@@ -99,6 +106,26 @@ document.addEventListener('DOMContentLoaded', () => {
     filterMonthInput.value = currentMonth;
   }
 
+  // Receipt file preview
+  if (fileInput) {
+    fileInput.addEventListener('change', () => {
+      const previewContainer = document.getElementById('receipt-preview-container');
+      const previewImg = document.getElementById('receipt-preview');
+      if (fileInput.files && fileInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          previewImg.src = e.target.result;
+          previewContainer.style.display = 'block';
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+      } else {
+        previewContainer.style.display = 'none';
+        previewImg.src = '';
+      }
+    });
+  }
+
+  // Expired stock filter init
   if (expiredFilterMonth) {
     expiredFilterMonth.value = currentMonth;
     expiredFilterMonth.addEventListener('change', () => {
@@ -252,13 +279,6 @@ loginForm.addEventListener('submit', async (e) => {
   await performLogin(usernameInput.value, passwordInput.value, selectedRole);
 });
 
-quickManagerBtn.addEventListener('click', async () => {
-  await performLogin('manager', 'manager123', 'manager');
-});
-
-quickStaffBtn.addEventListener('click', async () => {
-  await performLogin('staff', 'staff123', 'staff');
-});
 
 async function performLogin(username, password, expectedRole) {
   try {
@@ -493,6 +513,11 @@ stockForm.addEventListener('submit', async (e) => {
       qtyInput.value = '';
       priceInput.value = '';
       fileInput.value = '';
+      // Clear image preview
+      const previewContainer = document.getElementById('receipt-preview-container');
+      const previewImg = document.getElementById('receipt-preview');
+      if (previewContainer) previewContainer.style.display = 'none';
+      if (previewImg) previewImg.src = '';
       loadInventory();
     } else {
       const errData = await res.json();
@@ -716,7 +741,7 @@ forecastBtn.addEventListener('click', async () => {
     if (res.ok) {
       forecastResult.classList.remove('hidden');
       forecastVal.textContent = `${data.predicted_monthly_demand} kg/pcs`;
-      forecastMethod.textContent = data.method;
+      if (forecastMethod) forecastMethod.textContent = data.method;
     } else {
       alert(`Gagal memuat forecast: ${data.error || 'Unknown error'}${data.details ? ` (${data.details})` : ''}`);
     }

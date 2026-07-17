@@ -18,23 +18,27 @@
 ### FR-1: User Management & Authentication (RBAC)
 - The system must support two roles: `staff` and `manager`.
 - Users must login with a username and password.
+- **No Demo Login Buttons:** The login page must not include quick-access demo buttons. Users must always authenticate with real credentials.
 - **Separate Login UI Interface:** The login page must separate the inputs or tabs for different roles (e.g. distinct sections or tabs for Staff Login vs Manager Login).
 - **Settings Gear/Wheel Menu:** Both users must have access to a "gear/wheel" settings dropdown menu in the header containing:
   - **Change Password:** Access to a password update form (requires validation of current password).
   - Logout action.
+- **Header Logo:** The application header must include a recognizable SVG/icon logo alongside the application name.
 - State access control:
   - `staff` can access stock input, update stock status, and propose promotions.
   - `manager` can access the analytics dashboard, approve promotion drafts, and export Excel reports.
 
 ### FR-2: Manual Receipt Archiver & Quick Input (Staff side)
-- Staff can upload a photo of a receipt (stored as local file / URL reference in database) during stock entry.
+- Staff **must** upload a photo of a receipt during stock entry. The form cannot be submitted without a receipt file attached (mandatory field).
+- The uploaded receipt image must display a live preview below the file input immediately after selection, before form submission.
 - Quick Input Form parameters:
   - Ingredient Name (`string`, required)
   - Kuantitas (`float`, required)
   - Unit/Satuan (`string`, e.g., 'kg', 'pcs', required)
   - Total Harga Nota (`decimal`, required)
   - Kategori (`string`, dropdown list, required)
-  - Expiry Date (`date`, required)
+  - Expiry Date (`date`, required, minimum value = tomorrow's date)
+- **Expiry Date Validation:** The expiry date input must enforce a minimum selectable date of at least one day ahead of today (tomorrow). Dates in the past or the current day are not allowed.
 - **Separated Inventory Views & Dashboards (Staff side):**
   - **Big Scale Overall Management:** Displays the sum total of active stocks grouped by ingredient names (aggregated quantities).
   - **Expiry-Grouped Batches:** Displays individual batches sorted and grouped by expiration dates to track details.
@@ -72,6 +76,7 @@
 - Machine Learning system to forecast raw material demand for the next 30 days.
 - The forecaster runs in a Python script (Random Forest model) trained on historical usage data.
 - The Node.js backend calls this Python service (running as a Vercel Serverless Function) and presents the recommendation to the Manager.
+- The UI displays the recommended restock quantity. The specific analytics method name is **not** required to be shown to the end user.
 
 ### FR-6: AI Food Rescue Promo Recommender (Gemini API)
 - Triggered when stock items are marked as `critical` (expiry date < 2 days).
