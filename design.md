@@ -164,7 +164,7 @@ The Node.js backend retrieves:
 - The ingredient name and quantity from the critical stock batch.
 - The list of restaurant menus that depend on this ingredient (from `menu_ingredients`).
 
-It sends the following structured prompt to the Gemini API (`gemini-2.5-flash-preview-09-2025`):
+It sends the following structured prompt to the Gemini API (`gemini-2.5-flash`):
 ```text
 System Prompt: You are a professional culinary business optimizer. Your goal is to rescue critical raw food stock that is expiring soon by recommending menu items to discount.
 Return only a valid JSON object matching this schema:

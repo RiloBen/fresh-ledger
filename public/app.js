@@ -372,9 +372,17 @@ function renderExpiryBatches(stocks) {
       rowClass = 'style="background-color: #ffebee"';
     }
 
-    const receiptLink = item.receipt_image_path 
-      ? `<br><a href="${API_URL}${item.receipt_image_path}" target="_blank" class="tiny-text" style="color: var(--primary-color)">Lihat Nota 📄</a>` 
-      : '';
+    // If receipt_image_path is a Base64 data URL, use it directly as img src.
+    // Otherwise fall back to the legacy path-based URL.
+    let receiptLink = '';
+    if (item.receipt_image_path) {
+      if (item.receipt_image_path.startsWith('data:')) {
+        // Base64 image stored in database — open in new tab via a blob/data URL
+        receiptLink = `<br><a href="${item.receipt_image_path}" target="_blank" class="tiny-text" style="color: var(--primary-color)">Lihat Nota 📄</a>`;
+      } else {
+        receiptLink = `<br><a href="${API_URL}${item.receipt_image_path}" target="_blank" class="tiny-text" style="color: var(--primary-color)">Lihat Nota 📄</a>`;
+      }
+    }
 
     const tr = document.createElement('tr');
     tr.innerHTML = `

@@ -14,12 +14,13 @@ exports.createStock = async (req, res) => {
     const qty = parseFloat(quantity);
     const price = parseFloat(unit_price);
     const totalPrice = qty * price;
-    
-    // Save image path if uploaded
+
+    // Convert uploaded image to Base64 Data URL and store directly in TiDB.
+    // This avoids filesystem writes entirely — works on Vercel and locally.
     let receiptImagePath = null;
-    if (file) {
-      // Normalize path for web compatibility
-      receiptImagePath = `/public/uploads/${file.filename}`;
+    if (file && file.buffer) {
+      const base64 = file.buffer.toString('base64');
+      receiptImagePath = `data:${file.mimetype};base64,${base64}`;
     }
 
     const [result] = await db.query(
@@ -77,7 +78,7 @@ exports.updateStockStatus = async (req, res) => {
   try {
     // Check current stock batch details
     const [batches] = await db.query(
-      'SELECT remaining_quantity, quantity, ingredient_id, unit_price, receipt_image_path, expiry_date, created_at FROM stock_batches WHERE id = ?', 
+      'SELECT remaining_quantity, quantity, ingredient_id, unit_price, receipt_image_path, expiry_date, created_at FROM stock_batches WHERE id = ?',
       [parseInt(id, 10)]
     );
     if (batches.length === 0) {
@@ -104,7 +105,7 @@ exports.updateStockStatus = async (req, res) => {
       } else {
         targetStatus = 'active'; // remains active since there's leftover quantity
       }
-      
+
       // Update original batch
       await db.query(
         `UPDATE stock_batches 
@@ -112,7 +113,7 @@ exports.updateStockStatus = async (req, res) => {
          WHERE id = ?`,
         [targetStatus, newRemaining, parseInt(id, 10)]
       );
-    } 
+    }
     else if (status === 'wasted') {
       const deduct = quantity_to_deduct !== undefined ? parseFloat(quantity_to_deduct) : currentRemaining;
       if (isNaN(deduct) || deduct <= 0) {
@@ -123,7 +124,7 @@ exports.updateStockStatus = async (req, res) => {
         newRemaining = currentRemaining - deduct;
         const newOriginalQty = originalQty - deduct;
         const newTotalPrice = newOriginalQty * unitPrice;
-        
+
         // 1. Update original batch: reduce quantity and remaining
         await db.query(
           `UPDATE stock_batches 
@@ -148,13 +149,13 @@ exports.updateStockStatus = async (req, res) => {
             batch.created_at
           ]
         );
-        
+
         targetStatus = 'active'; // Original batch remains active
       } else {
         // Entire batch is wasted
         newRemaining = 0.00;
         targetStatus = 'wasted';
-        
+
         await db.query(
           `UPDATE stock_batches 
            SET status = ?, remaining_quantity = ?
@@ -162,23 +163,23 @@ exports.updateStockStatus = async (req, res) => {
           [targetStatus, newRemaining, parseInt(id, 10)]
         );
       }
-    } 
+    }
     else if (status === 'active') {
       newRemaining = parseFloat(batch.quantity);
       targetStatus = 'active';
-      
+
       await db.query(
         `UPDATE stock_batches 
          SET status = ?, remaining_quantity = ?
          WHERE id = ?`,
-         [targetStatus, newRemaining, parseInt(id, 10)]
+        [targetStatus, newRemaining, parseInt(id, 10)]
       );
     }
 
-    res.status(200).json({ 
-      message: `Stock batch updated successfully`, 
+    res.status(200).json({
+      message: `Stock batch updated successfully`,
       status: targetStatus,
-      remaining_quantity: newRemaining 
+      remaining_quantity: newRemaining
     });
   } catch (error) {
     console.error('[StockCtrl] Error updating stock status:', error);

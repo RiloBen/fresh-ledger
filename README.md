@@ -54,6 +54,16 @@ Buka file `.env` dan lengkapi nilai-nilai berikut:
 - **Kredensial Database**: Isi dengan detail dari TiDB Cloud Anda.
 - **`GEMINI_API_KEY`**: Masukkan API Key dari Google Gemini (jika kosong, sistem akan beralih ke *mock data* secara otomatis).
 
+### 🔑 Langkah Mengaktifkan Fitur AI (Google Gemini API)
+Untuk menggunakan kecerdasan buatan dalam merumuskan diskon penyelamatan bahan baku (*Food Rescue Promo*), lakukan langkah berikut:
+1. **Dapatkan API Key:** Kunjungi [Google AI Studio](https://aistudio.google.com/) dan buat API Key baru secara gratis.
+2. **Konfigurasi `.env`:** Rekatkan API Key Anda ke variabel `GEMINI_API_KEY` di file `.env`:
+   ```env
+   GEMINI_API_KEY=AIzaSy...
+   ```
+3. **Pengoperasian:** Saat berada di Dashboard Staf Dapur, klik tombol **AI Rescue** pada bahan baku dengan waktu kedaluwarsa `< 2 hari`. Sistem akan memanggil model `gemini-2.5-flash` menggunakan library `@google/genai` resmi untuk menghasilkan draf diskon secara cerdas beserta analisis rasionalnya, yang kemudian dapat disetujui oleh Manager.
+
+
 ### 3. Migrasi & Seeding Database (TiDB Cloud)
 Untuk membuat struktur tabel dan mengisi data transaksi fiktif 3 bulan terakhir (sangat penting untuk keindahan visual grafik juri dan melatih model ML):
 ```bash

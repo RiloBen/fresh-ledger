@@ -35,7 +35,7 @@ async function seed() {
         remaining_quantity DECIMAL(10,2) NOT NULL,
         unit_price DECIMAL(10,2) NOT NULL,
         total_price DECIMAL(10,2) NOT NULL,
-        receipt_image_path VARCHAR(255) NULL,
+        receipt_image_path LONGTEXT NULL,
         status ENUM('active', 'used', 'wasted') DEFAULT 'active',
         expiry_date DATE NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
