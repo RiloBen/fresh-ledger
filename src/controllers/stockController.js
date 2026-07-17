@@ -195,15 +195,20 @@ exports.getExpiredStock = async (req, res) => {
   }
 
   try {
-    // Find stock batches where expiry_date is in the month, and either status = 'wasted' or (status = 'active' and expired)
+    // Two categories:
+    // 1. Wasted batches: filter by created_at (the month the waste action was performed)
+    // 2. Active batches that have naturally expired: filter by expiry_date
     const [rows] = await db.query(
       `SELECT sb.*, i.name as ingredient_name, i.category, i.unit 
        FROM stock_batches sb
        JOIN ingredients i ON sb.ingredient_id = i.id
-       WHERE DATE_FORMAT(sb.expiry_date, '%Y-%m') = ? 
-         AND (sb.status = 'wasted' OR (sb.status = 'active' AND sb.expiry_date < CURRENT_DATE()))
-       ORDER BY sb.expiry_date ASC`,
-      [month]
+       WHERE (
+         (sb.status = 'wasted' AND DATE_FORMAT(sb.created_at, '%Y-%m') = ?)
+         OR
+         (sb.status = 'active' AND sb.expiry_date < CURRENT_DATE() AND DATE_FORMAT(sb.expiry_date, '%Y-%m') = ?)
+       )
+       ORDER BY sb.created_at DESC`,
+      [month, month]
     );
 
     res.status(200).json(rows);
