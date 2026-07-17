@@ -75,6 +75,9 @@
     - `[x]` **Excel Exporter:** Excel report download button executing `window.open` using `?token=...` parameter.
     - `[x]` **AI Rescue drafts Console:** Render cards from `GET /api/promo/drafts` showing suggested discount percentages. Wire a click handler to execute `PUT /api/promo/drafts/:id/approve`.
     - `[x]` **Procurement Forecaster:** Dynamic selector to fetch forecasting data from `/api/analytics/procurement-forecast/:id`.
-
-
-
+- `[x]` **Milestone 10: Monthly Filtering for Dashboard and Excel Report**
+  - `[x]` Add monthly selector (`#filter-month`) in `public/index.html` Manager workspace.
+  - `[x]` Update `public/app.js` to initialize the month filter to the current month, bind change event listeners, and pass the parameter to the API calls.
+  - `[x]` Update `getWasteIndex` in `src/controllers/analyticsController.js` to filter calculations by month if provided.
+  - `[x]` Update `exportExcel` in `src/controllers/analyticsController.js` to filter records by month and append the month to the file name.
+  - `[x]` Verify dashboard metrics updates and Excel downloaded reports filter by month.

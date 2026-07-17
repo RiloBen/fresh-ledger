@@ -120,6 +120,18 @@
       <!-- ================= MANAGER WORKSPACE ================= -->
       <div id="manager-workspace" class="hidden">
         
+        <!-- Monthly Filter Selection Row -->
+        <div class="filter-row card" style="margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.2rem; flex-wrap: wrap;">
+          <div>
+            <h3 style="margin: 0; font-size: 1.1rem; display: flex; align-items: center; gap: 0.5rem;">📅 Filter Periode Laporan</h3>
+            <p class="subtitle" style="margin: 0.2rem 0 0 0;">Pilih bulan untuk memfilter data analitik dan laporan Excel.</p>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.8rem;">
+            <label for="filter-month" style="font-weight: bold; font-size: 0.95rem;">Pilih Bulan:</label>
+            <input type="month" id="filter-month" style="padding: 0.6rem; border-radius: 6px; border: 1px solid var(--border-color); font-family: inherit; outline: none; background: white; cursor: pointer; transition: border-color 0.2s;">
+          </div>
+        </div>
+
         <!-- Waste Index Metric Row -->
         <div class="metrics-row">
           <div class="metric-card">

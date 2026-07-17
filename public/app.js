@@ -37,6 +37,7 @@ const metricWasteIndex = document.getElementById('metric-waste-index');
 const progressFill = document.getElementById('index-progress-fill');
 const promoDraftsList = document.getElementById('promo-drafts-list');
 const exportExcelBtn = document.getElementById('export-excel-btn');
+const filterMonthInput = document.getElementById('filter-month');
 
 // Forecasting Elements
 const forecastSelect = document.getElementById('forecast-select');
@@ -64,6 +65,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const futureDate = new Date();
   futureDate.setDate(futureDate.getDate() + 5);
   expInput.value = futureDate.toISOString().split('T')[0];
+
+  // Set default month for filter-month to current month (YYYY-MM)
+  const today = new Date();
+  const currentMonth = today.toISOString().substring(0, 7); // e.g. "2026-07"
+  if (filterMonthInput) {
+    filterMonthInput.value = currentMonth;
+  }
 
   if (token && user) {
     showWorkspace();
@@ -274,13 +282,18 @@ stockForm.addEventListener('submit', async (e) => {
 
 // MANAGER: Load Dashboard Analytics & AI Drafts
 async function loadManagerDashboard() {
-  loadMetrics();
+  const monthVal = filterMonthInput ? filterMonthInput.value : '';
+  loadMetrics(monthVal);
   loadPromoDrafts();
 }
 
-async function loadMetrics() {
+async function loadMetrics(month = '') {
   try {
-    const res = await fetch(`${API_URL}/api/analytics/waste-index`, {
+    let url = `${API_URL}/api/analytics/waste-index`;
+    if (month) {
+      url += `?month=${month}`;
+    }
+    const res = await fetch(url, {
       headers: getHeaders()
     });
     if (!res.ok) throw new Error('Failed to load metrics');
@@ -293,6 +306,13 @@ async function loadMetrics() {
   } catch (err) {
     console.error(err);
   }
+}
+
+// Bind event listener for monthly filtering
+if (filterMonthInput) {
+  filterMonthInput.addEventListener('change', () => {
+    loadMetrics(filterMonthInput.value);
+  });
 }
 
 async function loadPromoDrafts() {
@@ -353,8 +373,12 @@ window.approvePromo = async (id) => {
 
 // MANAGER: Export Excel
 exportExcelBtn.addEventListener('click', () => {
-  window.open(`${API_URL}/api/analytics/export-excel?token=${token}`, '_blank');
-  // Alternatively download via fetch
+  const monthVal = filterMonthInput ? filterMonthInput.value : '';
+  let url = `${API_URL}/api/analytics/export-excel?token=${token}`;
+  if (monthVal) {
+    url += `&month=${monthVal}`;
+  }
+  window.open(url, '_blank');
 });
 
 // MANAGER: Forecasting

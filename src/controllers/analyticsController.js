@@ -3,9 +3,23 @@ const ExcelJS = require('exceljs');
 
 // GET /api/analytics/waste-index - Calculate Waste Index metric
 exports.getWasteIndex = async (req, res) => {
+  const { month } = req.query;
+
   try {
-    const [spentRow] = await db.query('SELECT SUM(total_price) as spent FROM stock_batches');
-    const [wastedRow] = await db.query("SELECT SUM(total_price) as wasted FROM stock_batches WHERE status = 'wasted'");
+    let spentQuery = 'SELECT SUM(total_price) as spent FROM stock_batches';
+    let wastedQuery = "SELECT SUM(total_price) as wasted FROM stock_batches WHERE status = 'wasted'";
+    const spentParams = [];
+    const wastedParams = [];
+
+    if (month) {
+      spentQuery += " WHERE DATE_FORMAT(created_at, '%Y-%m') = ?";
+      spentParams.push(month);
+      wastedQuery += " AND DATE_FORMAT(created_at, '%Y-%m') = ?";
+      wastedParams.push(month);
+    }
+
+    const [spentRow] = await db.query(spentQuery, spentParams);
+    const [wastedRow] = await db.query(wastedQuery, wastedParams);
 
     const totalSpent = parseFloat(spentRow[0].spent || 0);
     const totalWasted = parseFloat(wastedRow[0].wasted || 0);
@@ -104,13 +118,22 @@ exports.getProcurementForecast = async (req, res) => {
 
 // GET /api/analytics/export-excel - Generate Excel report sheet
 exports.exportExcel = async (req, res) => {
+  const { month } = req.query;
+
   try {
-    const [rows] = await db.query(
-      `SELECT sb.id, i.name as ingredient_name, i.category, sb.quantity, sb.unit_price, sb.total_price, sb.status, sb.expiry_date, sb.created_at
-       FROM stock_batches sb
-       JOIN ingredients i ON sb.ingredient_id = i.id
-       ORDER BY sb.created_at DESC`
-    );
+    let query = `
+      SELECT sb.id, i.name as ingredient_name, i.category, sb.quantity, sb.unit_price, sb.total_price, sb.status, sb.expiry_date, sb.created_at
+      FROM stock_batches sb
+      JOIN ingredients i ON sb.ingredient_id = i.id
+    `;
+    const params = [];
+    if (month) {
+      query += ` WHERE DATE_FORMAT(sb.created_at, '%Y-%m') = ?`;
+      params.push(month);
+    }
+    query += ` ORDER BY sb.created_at DESC`;
+
+    const [rows] = await db.query(query, params);
 
     const formattedData = rows.map(r => ({
       'ID Transaksi': r.id,
@@ -159,7 +182,11 @@ exports.exportExcel = async (req, res) => {
     // Generate buffer asynchronously
     const buffer = await workbook.xlsx.writeBuffer();
 
-    res.setHeader('Content-Disposition', 'attachment; filename="Laporan_Mutasi_Pangan_FreshLedger.xlsx"');
+    const filename = month 
+      ? `Laporan_Mutasi_Pangan_FreshLedger_${month}.xlsx` 
+      : 'Laporan_Mutasi_Pangan_FreshLedger_Semua.xlsx';
+
+    res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
     res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
     res.send(buffer);
   } catch (error) {

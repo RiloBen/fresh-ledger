@@ -41,12 +41,13 @@
   - `wasted`: Raw material spoiled and thrown away.
   - `critical`: Raw material with remaining shelf life < 2 days.
 
-### FR-4: Waste Index Ledger & Excel Export (Manager side)
-- Visual analytics dashboard for Managers featuring:
-  - Interactive charts (Pie or Bar Chart) comparing total budget spent vs total wasted budget.
-  - Calculated **Waste Index (WI)** formula:
+### FR-4: Monthly Waste Index Ledger & Excel Export (Manager side)
+- **Monthly Filter Menu:** The Manager dashboard must feature a monthly selection menu (e.g., using a month input element) allowing the manager to filter analytics and reports by a specific month.
+- **Dynamic Analytics Dashboard:**
+  - Interactive metrics (Spent Budget, Wasted Budget, and Waste Index Ledger) and comparison charts must adjust dynamically to only display data from the selected month.
+  - Calculated **Waste Index (WI)** formula (filtered by selected month):
     $$\text{Waste Index} = \left(\frac{\text{Total Nominal Wasted}}{\text{Total Nominal Spent}}\right) \times 100\%$$
-- **Excel Export:** A button to export the stock transaction logs into a `.xlsx` file containing:
+- **Monthly Excel Export:** The export button must download an Excel `.xlsx` file containing stock transaction logs restricted *only* to the selected month, while preserving the exact layout format:
   - Transaction Date, Ingredient Name, Status (Used/Wasted), Quantity, Unit Price, Total Price, and Receipt Image Link/ID.
 
 ### FR-5: Smart Procurement Advisor (ML Forecaster)
@@ -73,3 +74,8 @@
 - **Database Seeding:** A seeding script must generate 15-20 logical historical transactions spanning 2 weeks to 3 months to prevent empty dashboard states during judging.
 - **Deployment:** The Node.js API and the Python ML service must be deployed on Vercel.
 - **Database:** Must run on TiDB Cloud Serverless (MySQL).
+
+---
+
+## 5. User Stories
+- **Manager's Monthly Audit:** As a **Manager**, I want to **select a specific month** on the dashboard so that I can **view the spent budget, wasted budget, and waste index ledger for that month** and **export the corresponding monthly Excel report** to evaluate financial performance and food waste trends.

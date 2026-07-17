@@ -110,9 +110,12 @@ CREATE TABLE sales_history (
 
 ### **Analytics & Reports**
 * **GET `/api/analytics/waste-index`**
+  - Query Parameter: `month` (optional, format: `YYYY-MM`, e.g., `2026-07`. Filters calculation to only include stock batches created in the selected month).
   - Response: `200 OK` -> `{"waste_index": 12.5, "total_spent": 1000000, "total_wasted": 125000}`
 * **GET `/api/analytics/export-excel`**
-  - Query Parameter: `token` (optional, can be passed as `?token=JWT_TOKEN` for direct downloads via `window.open`).
+  - Query Parameters:
+    - `token` (optional, can be passed as `?token=JWT_TOKEN` for direct downloads via `window.open`).
+    - `month` (optional, format: `YYYY-MM`, e.g., `2026-07`. Filters rows in the exported `.xlsx` sheet to only include transactions from the selected month).
   - Response: Generates and downloads a `.xlsx` file.
 
 ### **Promo Rescue (AI)**
