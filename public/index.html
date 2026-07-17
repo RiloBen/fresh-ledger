@@ -12,7 +12,15 @@
 
   <!-- Header -->
   <header>
-    <div class="logo">Fresh Ledger <span class="badge">Workspace</span></div>
+    <div class="logo">
+      <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle; margin-right: 8px;">
+        <rect width="28" height="28" rx="7" fill="white" fill-opacity="0.2"/>
+        <path d="M7 8h14M7 12h10M7 16h12M7 20h8" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="21" cy="19" r="4" fill="#10b981" stroke="white" stroke-width="1.5"/>
+        <path d="M19.5 19l1 1 2-2" stroke="white" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Fresh Ledger <span class="badge">Workspace</span>
+    </div>
     <div class="header-right">
       <!-- Settings dropdown wheel menu (hidden by default) -->
       <div id="settings-menu-container" class="dropdown hidden">
@@ -66,10 +74,7 @@
           <button type="submit" class="btn primary block">Login</button>
         </div>
 
-        <div class="button-group mt-4" style="border-top: 1px solid #e5e7eb; padding-top: 20px;">
-          <button type="button" id="quick-staff" class="btn secondary">Masuk sebagai Staf (Demo)</button>
-          <button type="button" id="quick-manager" class="btn secondary">Masuk sebagai Manager (Demo)</button>
-        </div>
+
       </form>
     </section>
 
@@ -116,12 +121,15 @@
               </div>
 
               <div class="form-group">
-                <label for="expiry_date">Tanggal Kedaluwarsa</label>
+                <label for="expiry_date">Tanggal Kedaluwarsa <span style="color: var(--danger-color);">*</span></label>
                 <input type="date" id="expiry_date" required>
               </div>
               <div class="form-group">
-                <label for="receipt-file">Lampiran Nota</label>
-                <input type="file" id="receipt-file" accept="image/*" style="padding: 6px;">
+                <label for="receipt-file">Lampiran Nota <span style="color: var(--danger-color);">*</span> <span class="tiny-text">(Wajib diupload)</span></label>
+                <input type="file" id="receipt-file" accept="image/*" style="padding: 6px;" required>
+                <div id="receipt-preview-container" style="display:none; margin-top: 10px;">
+                  <img id="receipt-preview" src="" alt="Preview Nota" style="max-width: 100%; max-height: 200px; border-radius: 8px; border: 1px solid #d1d5db; object-fit: contain;">
+                </div>
               </div>
 
               <button type="submit" class="btn primary block mt-4">Simpan Data Stok</button>
@@ -339,7 +347,6 @@
                 style="margin-top: 16px; padding: 12px; background-color: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px;">
                 <p style="margin: 0;"><strong>Rekomendasi Restock:</strong> <span id="forecast-val"
                     style="font-weight: bold; color: var(--primary-color);">0</span></p>
-                <p class="tiny-text" style="margin: 4px 0 0 0;">Metode Analitik: <span id="forecast-method">-</span></p>
               </div>
             </div>
           </section>
